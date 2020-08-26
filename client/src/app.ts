@@ -3,6 +3,8 @@ import { Game } from "phaser";
 import { GameScene } from "./gameScene";
 import { WelcomeScene } from "./welcomeScene";
 import { ScoreScene } from "./scoreScene";
+// @ts-ignore
+import { Room, Client } from "colyseus.js";
 
 const config: GameConfig = {
   title: "MultiplayerGame",
@@ -26,5 +28,16 @@ export class MultiplayerGame extends Game {
 }
 
 window.onload = () => {
-  const game = new MultiplayerGame(config);
+  new MultiplayerGame(config);
+
+  const client = new Client("ws://localhost:4000");
+
+  client
+    .joinOrCreate("Room1")
+    .then((room: any) => {
+      console.log(room.sessionId, "joined", room.name);
+    })
+    .catch((e: Error) => {
+      console.log("JOIN ERROR", e);
+    });
 };

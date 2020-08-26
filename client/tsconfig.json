@@ -9,10 +9,6 @@
     "allowJs": true,
     "allowSyntheticDefaultImports" : true,
     "esModuleInterop" : true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/phaser/types"
-    ],
     "types": [
       "Phaser"
     ]
