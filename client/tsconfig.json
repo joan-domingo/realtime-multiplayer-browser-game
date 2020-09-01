@@ -10,7 +10,8 @@
     "esModuleInterop" : true,
     "types": [
       "Phaser"
-    ]
+    ],
+    "resolveJsonModule": true
   },
   "include": ["src/*"]
 }

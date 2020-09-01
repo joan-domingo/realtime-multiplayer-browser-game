@@ -2,7 +2,7 @@ import http from "http";
 import express from "express";
 import cors from "cors";
 import { Server } from "colyseus";
-import { CustomLobbyRoom } from "./MyRoom";
+import { MyRoom } from "./MyRoom";
 
 const port = Number(process.env.PORT || 4000);
 const app = express();
@@ -15,7 +15,7 @@ const gameServer = new Server({
   server,
 });
 
-gameServer.define("Room1", CustomLobbyRoom);
+gameServer.define("Room1", MyRoom);
 
 gameServer.listen(port);
 console.log(`Listening on ws://localhost:${port}`);
