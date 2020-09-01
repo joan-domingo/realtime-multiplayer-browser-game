@@ -1,15 +1,12 @@
-import { Schema, type } from "@colyseus/schema";
-import { Client, LobbyRoom, Room } from "colyseus";
-import { LobbyOptions } from "colyseus/lib/rooms/LobbyRoom";
+import { Client, Room } from "colyseus";
 
 export class MyRoom extends Room {
   private players: any = {};
 
   onCreate(options: any) {
-    console.log("ON CREATE");
+    console.debug("ON CREATE");
 
     this.onMessage("PLAYER_MOVED", (player, data) => {
-      console.log("PLAYER_MOVED");
       this.players[player.sessionId].x = data.x;
       this.players[player.sessionId].y = data.y;
 
@@ -24,7 +21,6 @@ export class MyRoom extends Room {
     });
 
     this.onMessage("PLAYER_MOVEMENT_ENDED", (player, data) => {
-      console.log("PLAYER_MOVEMENT_ENDED");
       this.broadcast(
         "PLAYER_MOVEMENT_ENDED",
         {
@@ -37,7 +33,6 @@ export class MyRoom extends Room {
     });
 
     this.onMessage("PLAYER_CHANGED_MAP", (player, data) => {
-      console.log("PLAYER_CHANGED_MAP");
       this.players[player.sessionId].map = data.map;
 
       // this.send(player, {event: "CURRENT_PLAYERS", players: players})
@@ -51,13 +46,13 @@ export class MyRoom extends Room {
       });
     });
 
-    this.onMessage("*", (client, type, message) => {
-      console.log(JSON.stringify(client), "sent", type, message);
+    this.onMessage("*", (client, type) => {
+      console.debug("messageType not handled by the Room: " + type);
     });
   }
 
   onJoin(player: Client, options: any) {
-    console.log("ON JOIN", JSON.stringify(player), this.players);
+    console.debug("ON JOIN");
 
     this.players[player.sessionId] = {
       sessionId: player.sessionId,
@@ -81,7 +76,7 @@ export class MyRoom extends Room {
   }
 
   onLeave(player: Client, consented: boolean) {
-    console.log("ON LEAVE");
+    console.debug("ON LEAVE");
 
     this.broadcast("PLAYER_LEFT", {
       sessionId: player.sessionId,
@@ -91,6 +86,6 @@ export class MyRoom extends Room {
   }
 
   onDispose() {
-    console.log("ON DISPOSE");
+    console.debug("ON DISPOSE");
   }
 }
