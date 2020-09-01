@@ -1,4 +1,6 @@
-export class ScoreScene extends Phaser.Scene {
+import { Scene } from "phaser";
+
+export class ScoreScene extends Scene {
   score: number;
   result: Phaser.GameObjects.Text;
   hint: Phaser.GameObjects.Text;

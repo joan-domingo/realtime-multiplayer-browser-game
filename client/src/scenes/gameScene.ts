@@ -1,6 +1,7 @@
 import Image = Phaser.Physics.Arcade.Image;
+import { Scene } from "phaser";
 
-export class GameScene extends Phaser.Scene {
+export class GameScene extends Scene {
   delta: number;
   lastStarTime: number;
   starsCaught: number;

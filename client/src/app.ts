@@ -1,17 +1,24 @@
 import GameConfig = Phaser.Types.Core.GameConfig;
 import { Game } from "phaser";
-import { GameScene } from "./gameScene";
-import { WelcomeScene } from "./welcomeScene";
-import { ScoreScene } from "./scoreScene";
-// @ts-ignore
-import { Room, Client } from "colyseus.js";
+import { Client, Room } from "colyseus.js";
+import { WelcomeScene } from "./scenes/welcomeScene";
+import { GameScene } from "./scenes/gameScene";
+import { ScoreScene } from "./scenes/scoreScene";
+import { InitialLoadingScene } from "./scenes/InitialLoadingScene";
+import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
 
 const config: GameConfig = {
   title: "MultiplayerGame",
   width: 800,
   height: 600,
   parent: "game",
-  scene: [WelcomeScene, GameScene, ScoreScene],
+  scene: [
+    InitialLoadingScene,
+    ErrorLoadingScene,
+    WelcomeScene,
+    GameScene,
+    ScoreScene,
+  ],
   physics: {
     default: "arcade",
     arcade: {
@@ -21,23 +28,23 @@ const config: GameConfig = {
   backgroundColor: "#000033",
 };
 
-export class MultiplayerGame extends Game {
-  constructor(config: GameConfig) {
-    super(config);
-  }
-}
-
 window.onload = () => {
-  new MultiplayerGame(config);
+  // Load game
+  const game = new Game(config);
 
-  const client = new Client("ws://localhost:4000");
-
-  client
+  // Join server room
+  new Client("ws://localhost:4000")
     .joinOrCreate("Room1")
-    .then((room: any) => {
+    .then((room: Room) => {
       console.log(room.sessionId, "joined", room.name);
+      game.scene.switch("InitialLoadingScene", "WelcomeScene");
+
+      room.onStateChange((state) =>
+        console.log("onStateChange", JSON.stringify(state))
+      );
     })
     .catch((e: Error) => {
       console.log("JOIN ERROR", e);
+      game.scene.switch("InitialLoadingScene", "ErrorLoadingScene");
     });
 };

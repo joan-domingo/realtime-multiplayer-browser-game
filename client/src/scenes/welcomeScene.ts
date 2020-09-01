@@ -1,4 +1,6 @@
-export class WelcomeScene extends Phaser.Scene {
+import { Scene } from "phaser";
+
+export class WelcomeScene extends Scene {
   title: Phaser.GameObjects.Text;
   hint: Phaser.GameObjects.Text;
   constructor() {
