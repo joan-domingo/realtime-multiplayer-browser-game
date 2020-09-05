@@ -1,8 +1,36 @@
 import Phaser from "phaser";
-import { onlinePlayers, room } from "../app";
+import { room } from "../app";
+import Sprite = Phaser.GameObjects.Sprite;
+import StaticTilemapLayer = Phaser.Tilemaps.StaticTilemapLayer;
+import CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
+import Body = Phaser.Physics.Arcade.Body;
+import Text = Phaser.GameObjects.Text;
+import Key = Phaser.Input.Keyboard.Key;
+import { Room } from "colyseus.js";
+import { Scene2 } from "../scenes/Scene2";
+import { DoorsObject, WorldObject, WorldObjectProperties } from "../types";
 
-export default class Player extends Phaser.GameObjects.Sprite {
-  constructor(config) {
+export default class Player extends Sprite {
+  cursors: CursorKeys;
+  scene: Scene2;
+  body: Body;
+  container:
+    | { oldPosition: { x: number; y: number } }
+    | { oldPosition: undefined };
+  speed: number;
+  canChangeMap: boolean;
+  playerNickname: Text;
+  spacebar: Key;
+  playerTexturePosition: string;
+  map: string;
+
+  constructor(config: {
+    scene: Scene2;
+    worldLayer: StaticTilemapLayer;
+    key: string;
+    x: number;
+    y: number;
+  }) {
     super(config.scene, config.x, config.y, config.key);
 
     this.scene.add.existing(this);
@@ -27,7 +55,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.setDepth(5);
 
     // Container to store old data
-    this.container = [];
+    this.container = { oldPosition: undefined };
 
     // Player speed
     this.speed = 150;
@@ -47,7 +75,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
     );
   }
 
-  update(time, delta) {
+  update(time: number, delta: number) {
     const prevVelocity = this.body.velocity.clone();
 
     // Show player nickname above player
@@ -122,7 +150,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
   }
 
   doorInteraction() {
-    this.scene.map.findObject("Doors", (obj) => {
+    this.scene.map.findObject("Doors", (obj: DoorsObject) => {
       if (
         this.y >= obj.y &&
         this.y <= obj.y + obj.height &&
@@ -138,7 +166,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
   }
 
   worldInteraction() {
-    this.scene.map.findObject("Worlds", (world) => {
+    this.scene.map.findObject("Worlds", (world: WorldObject) => {
       if (
         this.y >= world.y &&
         this.y <= world.y + world.height &&
@@ -151,20 +179,21 @@ export default class Player extends Phaser.GameObjects.Sprite {
         let playerTexturePosition;
         if (world.properties)
           playerTexturePosition = world.properties.find(
-            (property) => property.name === "playerTexturePosition"
+            (property: WorldObjectProperties) =>
+              property.name === "playerTexturePosition"
           );
         if (playerTexturePosition)
           this.playerTexturePosition = playerTexturePosition.value;
 
         // Load new level (tiles map)
         this.scene.registry.destroy();
-        this.scene.events.off();
+        // TODO off() this.scene.events.off();
         this.scene.scene.restart({
           map: world.name,
           playerTexturePosition: this.playerTexturePosition,
         });
 
-        room.then((room) =>
+        room.then((room: Room) =>
           room.send("PLAYER_CHANGED_MAP", {
             map: world.name,
           })
@@ -172,4 +201,8 @@ export default class Player extends Phaser.GameObjects.Sprite {
       }
     });
   }
+
+  isWalking(position: unknown, x: number, y: number) {}
+
+  stopWalking(position: unknown) {}
 }

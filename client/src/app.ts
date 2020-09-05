@@ -8,6 +8,8 @@ import { InitialLoadingScene } from "./scenes/InitialLoadingScene";
 import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
 import { Scene1 } from "./scenes/Scene1";
 import { Scene2 } from "./scenes/Scene2";
+import OnlinePlayer from "./players/OnlinePlayer";
+import Player from "./players/Player";
 
 const config: GameConfig = {
   title: "MultiplayerGame",
@@ -39,12 +41,7 @@ const game = new Game(config);
 export const room = new Client("ws://localhost:4000")
   .joinOrCreate("Room1")
   .then((room: Room) => {
-    console.log(room.sessionId, "joined", room.name);
     game.scene.switch("InitialLoadingScene", "Scene1");
-
-    room.onStateChange((state) =>
-      console.log("onStateChange", JSON.stringify(state))
-    );
     return room;
   })
   .catch((e: Error) => {
@@ -52,4 +49,4 @@ export const room = new Client("ws://localhost:4000")
     game.scene.switch("InitialLoadingScene", "ErrorLoadingScene");
   });
 
-export let onlinePlayers: any[] = [];
+export const onlinePlayers: (Player | OnlinePlayer)[] = [];

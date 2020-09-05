@@ -1,7 +1,8 @@
 import { Client, Room } from "colyseus";
+import { Players } from "./types";
 
 export class MyRoom extends Room {
-  private players: any = {};
+  private players: Players = {};
 
   onCreate(options: any) {
     console.debug("ON CREATE");

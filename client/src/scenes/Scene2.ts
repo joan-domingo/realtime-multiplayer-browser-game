@@ -4,16 +4,17 @@ import Player from "../players/Player";
 import OnlinePlayer from "../players/OnlinePlayer";
 import GameObject = Phaser.GameObjects.GameObject;
 import { Room } from "colyseus.js";
+import StaticTilemapLayer = Phaser.Tilemaps.StaticTilemapLayer;
 
 let cursors: any, socketKey: any;
 
 export class Scene2 extends Scene {
-  private mapName: any;
-  private playerTexturePosition: any;
-  private container: any;
-  private map: any;
-  private belowLayer: any;
-  worldLayer: any;
+  mapName: any;
+  playerTexturePosition: any;
+  container: any;
+  map: any;
+  belowLayer: any;
+  worldLayer: StaticTilemapLayer;
   grassLayer: any;
   aboveLayer: any;
   player: Player;
@@ -38,7 +39,7 @@ export class Scene2 extends Scene {
       room.onMessage("CURRENT_PLAYERS", (data) => {
         console.log("CURRENT_PLAYERS");
         Object.keys(data.players).forEach((playerId) => {
-          let player = data.players[playerId];
+          const player = data.players[playerId];
 
           if (playerId !== room.sessionId) {
             onlinePlayers[player.sessionId] = new OnlinePlayer({
@@ -74,7 +75,7 @@ export class Scene2 extends Scene {
       });
       room.onMessage("PLAYER_MOVED", (data) => {
         // If player is in same map
-        if (this.mapName === onlinePlayers[data.sessionId].map) {
+        if (this.mapName === onlinePlayers[data.sessionId]?.map) {
           // If player isn't registered in this scene (map changing bug..)
           if (!onlinePlayers[data.sessionId].scene) {
             onlinePlayers[data.sessionId] = new OnlinePlayer({
