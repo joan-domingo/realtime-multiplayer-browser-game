@@ -1,31 +1,23 @@
 import Phaser from "phaser";
-import { room } from "../app";
 import Sprite = Phaser.GameObjects.Sprite;
 import StaticTilemapLayer = Phaser.Tilemaps.StaticTilemapLayer;
 import CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
 import Body = Phaser.Physics.Arcade.Body;
 import Text = Phaser.GameObjects.Text;
-import Key = Phaser.Input.Keyboard.Key;
-import { Room } from "colyseus.js";
-import { Scene2 } from "../scenes/Scene2";
-import { DoorsObject, WorldObject, WorldObjectProperties } from "../types";
+import { MapScene } from "../scenes/MapScene";
 
 export default class Player extends Sprite {
   cursors: CursorKeys;
-  scene: Scene2;
+  scene: MapScene;
   body: Body;
-  container:
-    | { oldPosition: { x: number; y: number } }
-    | { oldPosition: undefined };
+  oldPosition: { x: number; y: number };
   speed: number;
-  canChangeMap: boolean;
   playerNickname: Text;
-  spacebar: Key;
   playerTexturePosition: string;
   map: string;
 
   constructor(config: {
-    scene: Scene2;
+    scene: MapScene;
     worldLayer: StaticTilemapLayer;
     key: string;
     x: number;
@@ -37,10 +29,7 @@ export default class Player extends Sprite {
     this.scene.physics.world.enableBody(this);
     this.scene.physics.add.collider(this, config.worldLayer);
 
-    this.setTexture(
-      "currentPlayer",
-      `misa-${this.scene.playerTexturePosition}`
-    );
+    this.setTexture("currentPlayer", `misa-front`);
 
     // Register cursors for player movement
     this.cursors = this.scene.input.keyboard.createCursorKeys();
@@ -54,24 +43,21 @@ export default class Player extends Sprite {
     // Set depth (z-index)
     this.setDepth(5);
 
-    // Container to store old data
-    this.container = { oldPosition: undefined };
+    // store previous position
+    this.oldPosition = undefined;
 
     // Player speed
     this.speed = 150;
-
-    this.canChangeMap = true;
 
     // Player nickname text
     this.playerNickname = this.scene.add.text(
       this.x - this.width * 1.4,
       this.y - this.height / 2,
-      "Player"
-    );
-
-    // Add spacebar input
-    this.spacebar = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.SPACE
+      "Player",
+      {
+        fontSize: 8,
+        resolution: 1,
+      }
     );
   }
 
@@ -80,12 +66,6 @@ export default class Player extends Sprite {
 
     // Show player nickname above player
     this.showPlayerNickname();
-
-    // Player door interaction
-    this.doorInteraction();
-
-    // Player world interaction
-    this.worldInteraction();
 
     // Stop any previous movement from the last frame
     this.body.setVelocity(0);
@@ -137,72 +117,14 @@ export default class Player extends Sprite {
 
   isMoved() {
     if (
-      this.container.oldPosition &&
-      (this.container.oldPosition.x !== this.x ||
-        this.container.oldPosition.y !== this.y)
+      this.oldPosition &&
+      (this.oldPosition.x !== this.x || this.oldPosition.y !== this.y)
     ) {
-      this.container.oldPosition = { x: this.x, y: this.y };
+      this.oldPosition = { x: this.x, y: this.y };
       return true;
     } else {
-      this.container.oldPosition = { x: this.x, y: this.y };
+      this.oldPosition = { x: this.x, y: this.y };
       return false;
     }
   }
-
-  doorInteraction() {
-    this.scene.map.findObject("Doors", (obj: DoorsObject) => {
-      if (
-        this.y >= obj.y &&
-        this.y <= obj.y + obj.height &&
-        this.x >= obj.x &&
-        this.x <= obj.x + obj.width
-      ) {
-        console.log("Player is by " + obj.name);
-        if (this.spacebar.isDown) {
-          console.log("Door is open!");
-        }
-      }
-    });
-  }
-
-  worldInteraction() {
-    this.scene.map.findObject("Worlds", (world: WorldObject) => {
-      if (
-        this.y >= world.y &&
-        this.y <= world.y + world.height &&
-        this.x >= world.x &&
-        this.x <= world.x + world.width
-      ) {
-        console.log("Player is by world entry: " + world.name);
-
-        // Get playerTexturePosition from from Worlds object property
-        let playerTexturePosition;
-        if (world.properties)
-          playerTexturePosition = world.properties.find(
-            (property: WorldObjectProperties) =>
-              property.name === "playerTexturePosition"
-          );
-        if (playerTexturePosition)
-          this.playerTexturePosition = playerTexturePosition.value;
-
-        // Load new level (tiles map)
-        this.scene.registry.destroy();
-        // TODO off() this.scene.events.off();
-        this.scene.scene.restart({
-          map: world.name,
-          playerTexturePosition: this.playerTexturePosition,
-        });
-
-        room.then((room: Room) =>
-          room.send("PLAYER_CHANGED_MAP", {
-            map: world.name,
-          })
-        );
-      }
-    });
-  }
-
-  isWalking(position: unknown, x: number, y: number) {}
-
-  stopWalking(position: unknown) {}
 }

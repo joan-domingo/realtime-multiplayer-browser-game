@@ -6,32 +6,32 @@ import { GameScene } from "./scenes/gameScene";
 import { ScoreScene } from "./scenes/scoreScene";
 import { InitialLoadingScene } from "./scenes/InitialLoadingScene";
 import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
-import { Scene1 } from "./scenes/Scene1";
-import { Scene2 } from "./scenes/Scene2";
 import OnlinePlayer from "./players/OnlinePlayer";
-import Player from "./players/Player";
+import { MapScene } from "./scenes/MapScene";
 
 const config: GameConfig = {
-  title: "MultiplayerGame",
-  width: 800,
-  height: 600,
-  parent: "game",
+  type: Phaser.AUTO,
+  parent: "content",
+  width: 320,
+  height: 240,
+  zoom: 3,
+  physics: {
+    default: "arcade",
+    arcade: {
+      gravity: {
+        y: 0,
+      },
+      debug: false, // set to true to view zones
+    },
+  },
   scene: [
     InitialLoadingScene,
     ErrorLoadingScene,
-    Scene1,
-    Scene2,
+    MapScene,
     WelcomeScene,
     GameScene,
     ScoreScene,
   ],
-  physics: {
-    default: "arcade",
-    arcade: {
-      debug: false,
-    },
-  },
-  backgroundColor: "#000033",
 };
 
 // Load game
@@ -41,7 +41,8 @@ const game = new Game(config);
 export const room = new Client("ws://localhost:4000")
   .joinOrCreate("Room1")
   .then((room: Room) => {
-    game.scene.switch("InitialLoadingScene", "Scene1");
+    console.log(room.sessionId, "joined", room.name);
+    game.scene.switch("InitialLoadingScene", "MapScene");
     return room;
   })
   .catch((e: Error) => {
@@ -49,4 +50,4 @@ export const room = new Client("ws://localhost:4000")
     game.scene.switch("InitialLoadingScene", "ErrorLoadingScene");
   });
 
-export const onlinePlayers: (Player | OnlinePlayer)[] = [];
+export const onlinePlayers: OnlinePlayer[] = [];

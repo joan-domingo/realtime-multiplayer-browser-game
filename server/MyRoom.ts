@@ -33,20 +33,6 @@ export class MyRoom extends Room {
       );
     });
 
-    this.onMessage("PLAYER_CHANGED_MAP", (player, data) => {
-      this.players[player.sessionId].map = data.map;
-
-      // this.send(player, {event: "CURRENT_PLAYERS", players: players})
-
-      this.broadcast("PLAYER_CHANGED_MAP", {
-        sessionId: player.sessionId,
-        map: this.players[player.sessionId].map,
-        x: 300,
-        y: 75,
-        players: this.players,
-      });
-    });
-
     this.onMessage("*", (client, type) => {
       console.debug("messageType not handled by the Room: " + type);
     });
