@@ -1,8 +1,9 @@
-#Real-time Multiplayer Browser Game
+# Real-time Multiplayer Browser Game
 
 ## !! In Development !!
 
-##Set Up
+## Set Up
+
 Set up the server in a server terminal:
 
 ```cd server && yarn```
@@ -12,7 +13,8 @@ Set up the client in a client terminal:
 ```cd client && yarn```
 
 
-##Run
+## Run
+
 Run the server in the server terminal:
 
 ```yarn start```
