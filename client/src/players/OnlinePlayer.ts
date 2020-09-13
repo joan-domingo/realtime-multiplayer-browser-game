@@ -24,16 +24,20 @@ export default class OnlinePlayer extends Sprite {
     this.scene.physics.world.enableBody(this);
     this.scene.physics.add.collider(this, config.worldLayer);
 
-    this.setTexture("players", "bob_front.png").setScale(1.9, 2.1);
+    this.setTexture("players", "bob_front.png").setScale(0.8, 0.8);
 
     // Player Offset
     this.body.setOffset(0, 24);
 
     // Display playerId above player
     this.playerNickname = this.scene.add.text(
-      this.x - 40,
-      this.y - 25,
-      config.playerId
+      this.x - this.width * 1.4,
+      this.y - this.height / 2,
+      config.playerId,
+      {
+        fontSize: 8,
+        resolution: 1,
+      }
     );
   }
 
@@ -43,8 +47,8 @@ export default class OnlinePlayer extends Sprite {
     this.setPosition(x, y);
 
     // PlayerId
-    this.playerNickname.x = this.x - 40;
-    this.playerNickname.y = this.y - 25;
+    this.playerNickname.x = this.x - this.playerNickname.width / 2;
+    this.playerNickname.y = this.y - this.height / 2;
   }
 
   stopWalking(position: string) {

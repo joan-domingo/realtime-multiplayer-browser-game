@@ -6,6 +6,10 @@ import { onlinePlayers, room } from "../app";
 import { Room } from "colyseus.js";
 import OnlinePlayer from "../players/OnlinePlayer";
 import Player from "../players/Player";
+import { SpecialEffects } from "../types";
+import Group = Phaser.GameObjects.Group;
+import PlayerLaser from "../players/PlayerLaser";
+import Key = Phaser.Input.Keyboard.Key;
 
 export class MapScene extends Scene {
   map: Tilemap;
@@ -13,6 +17,12 @@ export class MapScene extends Scene {
   cursors: CursorKeys;
   obstaclesLayer: StaticTilemapLayer;
   socketKey: boolean;
+  sfx: SpecialEffects;
+  playerLasers: Group;
+  enemyLasers: Group;
+  private playerShootDelay: number;
+  private playerShootTick: number;
+  keySpace: Key;
 
   constructor() {
     super("MapScene");
@@ -37,6 +47,10 @@ export class MapScene extends Scene {
       "assets/images/players/players.png",
       "assets/atlas/players.json"
     );
+
+    // Load player laser
+    this.load.image("sprLaserPlayer", "assets/sprLaserPlayer.png");
+    this.load.audio("sndLaserPlayer", "assets/sndLaserPlayer.wav");
   }
 
   create() {
@@ -60,11 +74,29 @@ export class MapScene extends Scene {
 
     // user input
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.keySpace = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SPACE
+    );
 
     // React to room changes
     this.updateRoom();
 
     this.movementTimer();
+
+    // Special effects
+    this.sfx = {
+      laserPlayer: this.sound.add("sndLaserPlayer"),
+      laserEnemy: this.sound.add("sndLaserPlayer"),
+    };
+
+    this.enemyLasers = this.add.group();
+    this.playerLasers = this.add.group();
+
+    this.updateLasers();
+    this.updatePlayerShooting();
+
+    this.playerShootDelay = 30;
+    this.playerShootTick = 30;
   }
 
   private createMap() {
@@ -380,5 +412,50 @@ export class MapScene extends Scene {
     setInterval(() => {
       this.socketKey = true;
     }, 50);
+  }
+
+  private updateLasers() {
+    this.time.addEvent({
+      delay: 30,
+      callback: function () {
+        for (let i = 0; i < this.playerLasers.getChildren().length; i++) {
+          const laser = this.playerLasers.getChildren()[i];
+
+          laser.y -= laser.displayHeight;
+
+          if (laser.y < 1) {
+            // this.createExplosion(laser.x, laser.y);
+
+            if (laser) {
+              laser.destroy();
+            }
+          }
+        }
+      },
+      callbackScope: this,
+      loop: true,
+    });
+  }
+
+  private updatePlayerShooting() {
+    this.time.addEvent({
+      delay: 0,
+      callback: function () {
+        if (this.keySpace.isDown && this.player.active) {
+          if (this.playerShootTick < this.playerShootDelay) {
+            this.playerShootTick++;
+          } else {
+            const laser = new PlayerLaser(this, this.player.x, this.player.y);
+            this.playerLasers.add(laser);
+
+            // this.sfx.laserPlayer.play();
+
+            this.playerShootTick = 0;
+          }
+        }
+      },
+      callbackScope: this,
+      loop: true,
+    });
   }
 }

@@ -29,7 +29,7 @@ export default class Player extends Sprite {
     this.scene.physics.world.enableBody(this);
     this.scene.physics.add.collider(this, config.worldLayer);
 
-    this.setTexture("currentPlayer", `misa-front`);
+    this.setTexture("currentPlayer", `misa-front`).setScale(1 / 3, 1 / 3);
 
     // Register cursors for player movement
     this.cursors = this.scene.input.keyboard.createCursorKeys();
@@ -47,12 +47,12 @@ export default class Player extends Sprite {
     this.oldPosition = undefined;
 
     // Player speed
-    this.speed = 150;
+    this.speed = 50;
 
     // Player nickname text
     this.playerNickname = this.scene.add.text(
       this.x - this.width * 1.4,
-      this.y - this.height / 2,
+      0,
       "Player",
       {
         fontSize: 8,
@@ -112,7 +112,7 @@ export default class Player extends Sprite {
 
   showPlayerNickname() {
     this.playerNickname.x = this.x - this.playerNickname.width / 2;
-    this.playerNickname.y = this.y - this.height / 2;
+    this.playerNickname.y = this.y - this.height / 4;
   }
 
   isMoved() {
