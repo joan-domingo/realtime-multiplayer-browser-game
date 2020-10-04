@@ -11,9 +11,6 @@
     "typeRoots": [
       "./node_modules/phaser/types"
     ],
-    "types": [
-      "Phaser"
-    ],
     "resolveJsonModule": true
   },
   "include": ["src/*"]
