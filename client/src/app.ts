@@ -37,8 +37,10 @@ const config: GameConfig = {
 // Load game
 const game = new Game(config);
 
+const endpoint = process.env.ENDPOINT || "http://localhost:4000";
+
 // Join server room
-export const room = new Client("ws://localhost:4000")
+export const room = new Client(endpoint)
   .joinOrCreate("Room1")
   .then((room: Room) => {
     console.log(room.sessionId, "joined", room.name);

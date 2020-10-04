@@ -7,5 +7,5 @@
 # cd ../client && yarn && yarn build
 # cp -R dist ../web/build
 
-# Push Web directory to Heroku
+# Push Server directory to Heroku
 git subtree push --prefix server heroku master
