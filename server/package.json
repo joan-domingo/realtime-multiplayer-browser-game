@@ -5,7 +5,8 @@
   "author": "Joan Domingo Sallent",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.ts",
+    "dev": "nodemon -x ts-node index.ts",
+    "start": "ts-node index.ts",
     "build": "tsc",
     "loadtest": "colyseus-loadtest loadtest/example.ts --room my_room --numClients 2",
     "test": "echo \"Error: no test specified\" && exit 1"
