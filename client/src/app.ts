@@ -38,6 +38,7 @@ const config: GameConfig = {
 const game = new Game(config);
 
 const port = Number(process.env.PORT || 4000);
+console.log("client port", port);
 
 // Join server room
 export const room = new Client("ws://localhost:" + port)
