@@ -10,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use(express.static("dist"));
+app.use("dist", express.static("dist"));
 //assuming app is express Object.
 app.get("/", function (req, res) {
   res.sendFile("dist/index.html");
