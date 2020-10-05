@@ -8,11 +8,10 @@ import { MyRoom } from "./MyRoom";
 const port = Number(process.env.PORT || 4000);
 const app = express();
 
-app.use(cors());
 app.use(express.json());
-
 app.use(express.static(path.resolve(__dirname, "dist")));
 
+app.use(cors());
 app.get("/", (req, res) => {
   res.sendFile(path.resolve(__dirname, "dist/", "index.html"));
 });
