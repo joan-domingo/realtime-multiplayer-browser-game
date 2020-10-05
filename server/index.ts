@@ -7,14 +7,14 @@ import { MyRoom } from "./MyRoom";
 const port = Number(process.env.PORT || 4000);
 const app = express();
 
-//ENABLE CORS
-app.all("/", function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
-});
-
+app.use(cors());
 app.use(express.json());
+
+app.use(express.static("dist"));
+//assuming app is express Object.
+app.get("/", function (req, res) {
+  res.sendFile("dist/index.html");
+});
 
 const server = http.createServer(app);
 const gameServer = new Server({
