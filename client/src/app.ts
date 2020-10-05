@@ -41,7 +41,7 @@ const game = new Game(config);
 
 // Join server room
 export const room = new Client(
-  "https://multiplayer-browser-game-be.herokuapp.com/"
+  "https://multiplayer-browser-game-be.herokuapp.com"
 )
   .joinOrCreate("Room1")
   .then((room: Room) => {
