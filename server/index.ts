@@ -1,6 +1,7 @@
 import http from "http";
 import express from "express";
 import cors from "cors";
+import path from "path";
 import { Server } from "colyseus";
 import { MyRoom } from "./MyRoom";
 
@@ -10,10 +11,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("dist", express.static("dist"));
-//assuming app is express Object.
-app.get("/", function (req, res) {
-  res.sendFile("dist/index.html");
+app.use(express.static(path.resolve(__dirname, "dist")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "dist/", "index.html"));
 });
 
 const server = http.createServer(app);
