@@ -7,14 +7,7 @@ import { MyRoom } from "./MyRoom";
 const port = Number(process.env.PORT || 4000);
 const app = express();
 
-const corsOptions = {
-  origin: [
-    "https://multiplayer-browser-game-be.herokuapp.com",
-    "https://master.dirptxqd87yvl.amplifyapp.com",
-  ],
-};
-
-app.use(cors(corsOptions));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 const server = http.createServer(app);

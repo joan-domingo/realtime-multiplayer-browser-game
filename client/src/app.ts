@@ -39,7 +39,7 @@ const game = new Game(config);
 
 const endpoint =
   process.env.NODE_ENV !== "production"
-    ? "http://localhost:4000"
+    ? "ws://localhost:4000"
     : "https://multiplayer-browser-game-be.herokuapp.com";
 
 // Join server room
