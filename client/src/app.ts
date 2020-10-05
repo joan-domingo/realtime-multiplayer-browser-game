@@ -37,10 +37,12 @@ const config: GameConfig = {
 // Load game
 const game = new Game(config);
 
-const endpoint = process.env.ENDPOINT || "http://localhost:4000";
+//const endpoint = process.env.ENDPOINT || "http://localhost:4000";
 
 // Join server room
-export const room = new Client(endpoint)
+export const room = new Client(
+  "https://multiplayer-browser-game-be.herokuapp.com/"
+)
   .joinOrCreate("Room1")
   .then((room: Room) => {
     console.log(room.sessionId, "joined", room.name);
