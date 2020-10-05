@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon -x ts-node index.ts",
-    "start": "ts-node index.ts",
+    "start": "node lib/index.js",
     "build": "tsc",
     "loadtest": "colyseus-loadtest loadtest/example.ts --room my_room --numClients 2",
     "test": "echo \"Error: no test specified\" && exit 1"
