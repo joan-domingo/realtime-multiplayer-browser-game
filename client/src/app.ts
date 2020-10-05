@@ -37,9 +37,10 @@ const config: GameConfig = {
 // Load game
 const game = new Game(config);
 
-const port = Number(process.env.PORT || 4000);
-const endpoint = location.origin.replace(/^http/, "ws");
-console.log(endpoint);
+const endpoint =
+  process.env.NODE_ENV === "production"
+    ? location.origin.replace(/^http/, "ws")
+    : "ws://localhost:4000";
 
 // Join server room
 export const room = new Client(endpoint)
