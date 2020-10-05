@@ -38,10 +38,11 @@ const config: GameConfig = {
 const game = new Game(config);
 
 const port = Number(process.env.PORT || 4000);
-console.log("client port", port);
+const endpoint = location.origin.replace(/^http/, "ws");
+console.log(endpoint);
 
 // Join server room
-export const room = new Client("ws://localhost:" + port)
+export const room = new Client(endpoint)
   .joinOrCreate("Room1")
   .then((room: Room) => {
     console.log(room.sessionId, "joined", room.name);
