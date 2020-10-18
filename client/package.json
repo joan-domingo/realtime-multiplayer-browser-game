@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode production",
-    "start": "webpack-dev-server"
+    "dev": "webpack-dev-server"
   },
   "dependencies": {
     "@types/node": "^14.11.2",

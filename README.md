@@ -17,11 +17,11 @@ Set up the client in a client terminal:
 
 Run the server in the server terminal:
 
-```yarn start```
+```yarn dev```
 
 Run the client in the client terminal:
 
-```yarn start```
+```yarn dev```
 
 Open http://localhost:3000/ in your browser.
 
