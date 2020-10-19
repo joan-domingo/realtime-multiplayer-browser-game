@@ -25,3 +25,6 @@ Run the client in the client terminal:
 
 Open http://localhost:3000/ in your browser.
 
+## Helpful tools
+* Map Editor: https://www.mapeditor.org/
+

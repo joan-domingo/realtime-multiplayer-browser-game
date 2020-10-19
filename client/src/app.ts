@@ -12,9 +12,8 @@ import { MapScene } from "./scenes/MapScene";
 const config: GameConfig = {
   type: Phaser.AUTO,
   parent: "content",
-  width: 320,
-  height: 240,
-  zoom: 3,
+  width: 960,
+  height: 640,
   physics: {
     default: "arcade",
     arcade: {
@@ -23,6 +22,12 @@ const config: GameConfig = {
       },
       debug: false, // set to true to view zones
     },
+  },
+  render: {
+    // prevent tile bleeding
+    antialiasGL: false,
+    // prevent pixel art from becoming blurre when scaled
+    pixelArt: true,
   },
   scene: [
     InitialLoadingScene,

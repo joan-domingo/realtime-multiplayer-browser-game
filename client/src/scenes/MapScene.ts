@@ -16,6 +16,8 @@ export class MapScene extends Scene {
   player: Player;
   cursors: CursorKeys;
   obstaclesLayer: StaticTilemapLayer;
+  bottomLayer: StaticTilemapLayer;
+  aboveLayer: StaticTilemapLayer;
   socketKey: boolean;
   sfx: SpecialEffects;
   playerLasers: Group;
@@ -24,15 +26,21 @@ export class MapScene extends Scene {
   private playerShootTick: number;
   keySpace: Key;
 
+  private tilemapKey: string;
+  private tilesetKey: string;
+
   constructor() {
     super("MapScene");
   }
 
+  init(data: any): void {
+    this.tilemapKey = "/assets/tilemaps/test_map";
+    this.tilesetKey = "/assets/tilesets/tiles";
+  }
+
   preload() {
-    // map tiles
-    this.load.image("tiles", "assets/map/spritesheet-extruded.png");
-    // map in json format
-    this.load.tilemapTiledJSON("map", "assets/map/map.json");
+    this.load.image(this.tilesetKey);
+    this.load.tilemapTiledJSON(this.tilemapKey);
 
     // Load player atlas
     this.load.atlas(
@@ -49,8 +57,8 @@ export class MapScene extends Scene {
     );
 
     // Load player laser
-    this.load.image("sprLaserPlayer", "assets/sprLaserPlayer.png");
-    this.load.audio("sndLaserPlayer", "assets/sndLaserPlayer.wav");
+    this.load.image("sprLaserPlayer", "assets/images/sprLaserPlayer.png");
+    this.load.audio("sndLaserPlayer", "assets/sounds/sndLaserPlayer.wav");
   }
 
   create() {
@@ -68,9 +76,6 @@ export class MapScene extends Scene {
 
     // update camera
     this.updateCamera();
-
-    this.obstaclesLayer.setCollisionBetween(1, 50);
-    this.physics.add.collider(this.player, this.obstaclesLayer);
 
     // user input
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -97,31 +102,61 @@ export class MapScene extends Scene {
 
     this.playerShootDelay = 30;
     this.playerShootTick = 30;
+
+    // Create worldLayer collision graphic above the player, but below the help text
+    /*const graphics = this.add.graphics().setAlpha(0.75).setDepth(20);
+    this.obstaclesLayer.renderDebug(graphics, {
+      tileColor: null, // Color of non-colliding tiles
+      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+      faceColor: new Phaser.Display.Color(40, 39, 37, 255), // Color of colliding face edges
+    });*/
   }
 
   private createMap() {
     // create the map
     this.map = this.make.tilemap({
-      key: "map",
+      key: this.tilemapKey,
     });
 
-    // first parameter is the name of the tilemap in tiled
-    const tiles = this.map.addTilesetImage(
-      "spritesheet",
-      "tiles",
-      16,
-      16,
-      1,
-      2
+    // Set current map Bounds
+    this.scene.scene.physics.world.setBounds(
+      0,
+      0,
+      this.map.widthInPixels,
+      this.map.heightInPixels
     );
 
-    // creating the layers
-    this.map.createStaticLayer("Grass", tiles, 0, 0);
-    this.obstaclesLayer = this.map.createStaticLayer("Obstacles", tiles, 0, 0);
+    const tileSetName = MapScene.getDefaultTilesetName(this.tilesetKey);
+    const tileSet = this.map.addTilesetImage(tileSetName, this.tilesetKey);
 
-    // don't go out of the map
-    this.physics.world.bounds.width = this.map.widthInPixels;
-    this.physics.world.bounds.height = this.map.heightInPixels;
+    // creating the layers
+    this.bottomLayer = this.map.createStaticLayer("floor", tileSet, 0, 0);
+    this.obstaclesLayer = this.map.createStaticLayer("walls", tileSet, 0, 0);
+    this.aboveLayer = this.map.createStaticLayer("top", tileSet, 0, 0);
+
+    // Create collision for obstacles layer
+    this.obstaclesLayer.setCollision([
+      7,
+      10,
+      13,
+      14,
+      49,
+      50,
+      53,
+      54,
+      55,
+      56,
+      59,
+      60,
+    ]);
+
+    // Layer hides player
+    this.obstaclesLayer.setDepth(10);
+    this.aboveLayer.setDepth(10);
+  }
+
+  private static getDefaultTilesetName(tilesetKey: string): string {
+    return tilesetKey.slice(tilesetKey.lastIndexOf("/") + 1);
   }
 
   private createAnimations() {
@@ -192,8 +227,8 @@ export class MapScene extends Scene {
       this.map.widthInPixels,
       this.map.heightInPixels
     );
-    this.cameras.main.startFollow(this.player);
-    this.cameras.main.roundPixels = true; // avoid tile bleed
+    this.cameras.main.setZoom(3);
+    this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
   }
 
   update(time: number, delta: number) {

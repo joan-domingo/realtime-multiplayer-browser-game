@@ -59,6 +59,7 @@ export default class Player extends Sprite {
         resolution: 1,
       }
     );
+    this.playerNickname.setDepth(11);
   }
 
   update(time: number, delta: number) {
