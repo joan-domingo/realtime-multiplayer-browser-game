@@ -2,6 +2,8 @@
 
 ## !! In Development !!
 
+Find the current state published in: https://multiplayer-game-be.herokuapp.com/
+
 ## Set Up
 
 Set up the server in a server terminal:
