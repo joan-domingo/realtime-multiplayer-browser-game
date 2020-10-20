@@ -1,0 +1,356 @@
+{
+	"textures": [
+		{
+			"image": "sprite_jedi.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 292,
+				"h": 44
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "jedi-back-00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 3,
+						"y": 3,
+						"w": 27,
+						"h": 44
+					},
+					"frame": {
+						"x": 0,
+						"y": 0,
+						"w": 27,
+						"h": 44
+					}
+				},
+				{
+					"filename": "jedi-back-02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 3,
+						"y": 3,
+						"w": 27,
+						"h": 44
+					},
+					"frame": {
+						"x": 0,
+						"y": 0,
+						"w": 27,
+						"h": 44
+					}
+				},
+				{
+					"filename": "jedi-front-00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 3,
+						"w": 25,
+						"h": 44
+					},
+					"frame": {
+						"x": 27,
+						"y": 0,
+						"w": 25,
+						"h": 44
+					}
+				},
+				{
+					"filename": "jedi-front-02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 3,
+						"w": 25,
+						"h": 44
+					},
+					"frame": {
+						"x": 27,
+						"y": 0,
+						"w": 25,
+						"h": 44
+					}
+				},
+				{
+					"filename": "jedi-left-00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 3,
+						"w": 23,
+						"h": 44
+					},
+					"frame": {
+						"x": 52,
+						"y": 0,
+						"w": 23,
+						"h": 44
+					}
+				},
+				{
+					"filename": "jedi-left-02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 3,
+						"w": 23,
+						"h": 44
+					},
+					"frame": {
+						"x": 52,
+						"y": 0,
+						"w": 23,
+						"h": 44
+					}
+				},
+				{
+					"filename": "jedi-right-00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 3,
+						"w": 23,
+						"h": 44
+					},
+					"frame": {
+						"x": 75,
+						"y": 0,
+						"w": 23,
+						"h": 44
+					}
+				},
+				{
+					"filename": "jedi-right-02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 3,
+						"w": 23,
+						"h": 44
+					},
+					"frame": {
+						"x": 75,
+						"y": 0,
+						"w": 23,
+						"h": 44
+					}
+				},
+				{
+					"filename": "jedi-back-01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 4,
+						"w": 26,
+						"h": 43
+					},
+					"frame": {
+						"x": 98,
+						"y": 0,
+						"w": 26,
+						"h": 43
+					}
+				},
+				{
+					"filename": "jedi-back-03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 2,
+						"y": 4,
+						"w": 26,
+						"h": 43
+					},
+					"frame": {
+						"x": 124,
+						"y": 0,
+						"w": 26,
+						"h": 43
+					}
+				},
+				{
+					"filename": "jedi-front-01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 3,
+						"y": 4,
+						"w": 25,
+						"h": 43
+					},
+					"frame": {
+						"x": 150,
+						"y": 0,
+						"w": 25,
+						"h": 43
+					}
+				},
+				{
+					"filename": "jedi-front-03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 4,
+						"w": 25,
+						"h": 43
+					},
+					"frame": {
+						"x": 175,
+						"y": 0,
+						"w": 25,
+						"h": 43
+					}
+				},
+				{
+					"filename": "jedi-left-03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 4,
+						"w": 24,
+						"h": 43
+					},
+					"frame": {
+						"x": 200,
+						"y": 0,
+						"w": 24,
+						"h": 43
+					}
+				},
+				{
+					"filename": "jedi-right-03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 3,
+						"y": 4,
+						"w": 24,
+						"h": 43
+					},
+					"frame": {
+						"x": 224,
+						"y": 0,
+						"w": 24,
+						"h": 43
+					}
+				},
+				{
+					"filename": "jedi-left-01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 4,
+						"w": 22,
+						"h": 43
+					},
+					"frame": {
+						"x": 248,
+						"y": 0,
+						"w": 22,
+						"h": 43
+					}
+				},
+				{
+					"filename": "jedi-right-01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 4,
+						"w": 22,
+						"h": 43
+					},
+					"frame": {
+						"x": 270,
+						"y": 0,
+						"w": 22,
+						"h": 43
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:0c4c900b5207697111cb4b672b66e9f8:84210050dff9a908a7fb0cd5a7862695:8b711276dab5cbefca0bf0e2ee315a40$"
+	}
+}
