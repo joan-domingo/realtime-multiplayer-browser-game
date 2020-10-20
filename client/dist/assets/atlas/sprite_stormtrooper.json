@@ -1,0 +1,356 @@
+{
+	"textures": [
+		{
+			"image": "sprite_stormtrooper.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 320,
+				"h": 44
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "stormtrooper-back-00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 3,
+						"w": 25,
+						"h": 44
+					},
+					"frame": {
+						"x": 0,
+						"y": 0,
+						"w": 25,
+						"h": 44
+					}
+				},
+				{
+					"filename": "stormtrooper-back-02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 3,
+						"w": 25,
+						"h": 44
+					},
+					"frame": {
+						"x": 25,
+						"y": 0,
+						"w": 25,
+						"h": 44
+					}
+				},
+				{
+					"filename": "stormtrooper-front-00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 3,
+						"w": 25,
+						"h": 44
+					},
+					"frame": {
+						"x": 50,
+						"y": 0,
+						"w": 25,
+						"h": 44
+					}
+				},
+				{
+					"filename": "stormtrooper-front-02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 3,
+						"w": 25,
+						"h": 44
+					},
+					"frame": {
+						"x": 75,
+						"y": 0,
+						"w": 25,
+						"h": 44
+					}
+				},
+				{
+					"filename": "stormtrooper-back-01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 4,
+						"w": 24,
+						"h": 43
+					},
+					"frame": {
+						"x": 100,
+						"y": 0,
+						"w": 24,
+						"h": 43
+					}
+				},
+				{
+					"filename": "stormtrooper-back-03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 4,
+						"w": 24,
+						"h": 43
+					},
+					"frame": {
+						"x": 124,
+						"y": 0,
+						"w": 24,
+						"h": 43
+					}
+				},
+				{
+					"filename": "stormtrooper-front-01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 4,
+						"y": 4,
+						"w": 24,
+						"h": 43
+					},
+					"frame": {
+						"x": 148,
+						"y": 0,
+						"w": 24,
+						"h": 43
+					}
+				},
+				{
+					"filename": "stormtrooper-front-03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 4,
+						"w": 24,
+						"h": 43
+					},
+					"frame": {
+						"x": 172,
+						"y": 0,
+						"w": 24,
+						"h": 43
+					}
+				},
+				{
+					"filename": "stormtrooper-left-00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 8,
+						"y": 4,
+						"w": 19,
+						"h": 43
+					},
+					"frame": {
+						"x": 196,
+						"y": 0,
+						"w": 19,
+						"h": 43
+					}
+				},
+				{
+					"filename": "stormtrooper-left-02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 8,
+						"y": 4,
+						"w": 19,
+						"h": 43
+					},
+					"frame": {
+						"x": 196,
+						"y": 0,
+						"w": 19,
+						"h": 43
+					}
+				},
+				{
+					"filename": "stormtrooper-right-00.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 4,
+						"w": 19,
+						"h": 43
+					},
+					"frame": {
+						"x": 215,
+						"y": 0,
+						"w": 19,
+						"h": 43
+					}
+				},
+				{
+					"filename": "stormtrooper-right-02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 4,
+						"w": 19,
+						"h": 43
+					},
+					"frame": {
+						"x": 215,
+						"y": 0,
+						"w": 19,
+						"h": 43
+					}
+				},
+				{
+					"filename": "stormtrooper-left-03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 5,
+						"w": 22,
+						"h": 42
+					},
+					"frame": {
+						"x": 234,
+						"y": 0,
+						"w": 22,
+						"h": 42
+					}
+				},
+				{
+					"filename": "stormtrooper-right-03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 5,
+						"w": 22,
+						"h": 42
+					},
+					"frame": {
+						"x": 256,
+						"y": 0,
+						"w": 22,
+						"h": 42
+					}
+				},
+				{
+					"filename": "stormtrooper-left-01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 6,
+						"y": 5,
+						"w": 21,
+						"h": 42
+					},
+					"frame": {
+						"x": 278,
+						"y": 0,
+						"w": 21,
+						"h": 42
+					}
+				},
+				{
+					"filename": "stormtrooper-right-01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 32,
+						"h": 48
+					},
+					"spriteSourceSize": {
+						"x": 5,
+						"y": 5,
+						"w": 21,
+						"h": 42
+					},
+					"frame": {
+						"x": 299,
+						"y": 0,
+						"w": 21,
+						"h": 42
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:d98bd0203bdafb7fb5ff48b59984d9ff:49a156bad9868cd401044723362c2bd5:cbdbd874841736672c9d1354d3bdb223$"
+	}
+}

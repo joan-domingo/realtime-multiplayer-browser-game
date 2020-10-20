@@ -28,10 +28,7 @@ export default class Player extends Sprite {
     this.scene.physics.world.enableBody(this);
     this.scene.physics.add.collider(this, config.worldLayer);
 
-    this.setTexture("currentPlayer", `jedi-front-00.png`).setScale(
-      1 / 2,
-      1 / 2
-    );
+    this.setTexture(config.key, `jedi-front-00.png`).setScale(1 / 2, 1 / 2);
 
     // Register cursors for player movement
     this.cursors = this.scene.input.keyboard.createCursorKeys();

@@ -21,6 +21,8 @@ export class MapScene extends Scene {
   private playerAtlastUrl: string;
   // online player
   private onlinePlayerKey: string;
+  private onlinePlayerTextureUrl: string;
+  private onlinePlayerAtlastUrl: string;
 
   map: Tilemap;
   player: Player;
@@ -47,6 +49,11 @@ export class MapScene extends Scene {
     this.playerKey = "currentPlayer";
     this.playerTextureUrl = "assets/atlas/sprite_jedi.png";
     this.playerAtlastUrl = "assets/atlas/sprite_jedi.json";
+
+    // Online player
+    this.onlinePlayerKey = "players";
+    this.onlinePlayerTextureUrl = "assets/atlas/sprite_stormtrooper.png";
+    this.onlinePlayerAtlastUrl = "assets/atlas/sprite_stormtrooper.json";
   }
 
   preload() {
@@ -62,9 +69,9 @@ export class MapScene extends Scene {
 
     // Load online player atlas
     this.load.atlas(
-      "players",
-      "assets/atlas/players.png",
-      "assets/atlas/players.json"
+      this.onlinePlayerKey,
+      this.onlinePlayerTextureUrl,
+      this.onlinePlayerAtlastUrl
     );
 
     // Load player laser
@@ -115,12 +122,14 @@ export class MapScene extends Scene {
     this.playerShootTick = 30;
 
     // Create worldLayer collision graphic above the player, but below the help text
-    /*const graphics = this.add.graphics().setAlpha(0.75).setDepth(20);
-    this.obstaclesLayer.renderDebug(graphics, {
-      tileColor: null, // Color of non-colliding tiles
-      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-      faceColor: new Phaser.Display.Color(40, 39, 37, 255), // Color of colliding face edges
-    });*/
+    if (process.env.NODE_ENV === "development") {
+      const graphics = this.add.graphics().setAlpha(0.75).setDepth(20);
+      this.obstaclesLayer.renderDebug(graphics, {
+        tileColor: null, // Color of non-colliding tiles
+        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
+        faceColor: new Phaser.Display.Color(40, 39, 37, 255), // Color of colliding face edges
+      });
+    }
   }
 
   private createMap() {
@@ -146,20 +155,7 @@ export class MapScene extends Scene {
     const aboveLayer = this.map.createStaticLayer("top", tileSet, 0, 0);
 
     // Create collision for obstacles layer
-    this.obstaclesLayer.setCollision([
-      7,
-      10,
-      13,
-      14,
-      49,
-      50,
-      53,
-      54,
-      55,
-      56,
-      59,
-      60,
-    ]);
+    this.obstaclesLayer.setCollision([7, 10, 13, 14, 49, 50, 53, 54, 59, 60]);
 
     // Layer hides player
     this.obstaclesLayer.setDepth(10);
@@ -175,7 +171,7 @@ export class MapScene extends Scene {
     // animation manager so any sprite can access them.
     this.anims.create({
       key: "jedi-front",
-      frames: this.anims.generateFrameNames("currentPlayer", {
+      frames: this.anims.generateFrameNames(this.playerKey, {
         start: 0,
         end: 3,
         zeroPad: 2,
@@ -187,7 +183,7 @@ export class MapScene extends Scene {
     });
     this.anims.create({
       key: "jedi-back",
-      frames: this.anims.generateFrameNames("currentPlayer", {
+      frames: this.anims.generateFrameNames(this.playerKey, {
         prefix: "jedi-back-",
         start: 0,
         end: 3,
@@ -199,7 +195,7 @@ export class MapScene extends Scene {
     });
     this.anims.create({
       key: "jedi-right",
-      frames: this.anims.generateFrameNames("currentPlayer", {
+      frames: this.anims.generateFrameNames(this.playerKey, {
         prefix: "jedi-right-",
         start: 0,
         end: 3,
@@ -211,8 +207,60 @@ export class MapScene extends Scene {
     });
     this.anims.create({
       key: "jedi-left",
-      frames: this.anims.generateFrameNames("currentPlayer", {
+      frames: this.anims.generateFrameNames(this.playerKey, {
         prefix: "jedi-left-",
+        start: 0,
+        end: 3,
+        zeroPad: 2,
+        suffix: ".png",
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+  }
+
+  private createOnlinePlayerAnimations() {
+    // onlinePlayer animations
+    this.anims.create({
+      key: "stormtrooper-front",
+      frames: this.anims.generateFrameNames(this.onlinePlayerKey, {
+        start: 0,
+        end: 3,
+        zeroPad: 2,
+        prefix: "stormtrooper-front-",
+        suffix: ".png",
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: "stormtrooper-back",
+      frames: this.anims.generateFrameNames(this.onlinePlayerKey, {
+        prefix: "stormtrooper-back-",
+        start: 0,
+        end: 3,
+        zeroPad: 2,
+        suffix: ".png",
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: "stormtrooper-right",
+      frames: this.anims.generateFrameNames(this.onlinePlayerKey, {
+        prefix: "stormtrooper-right-",
+        start: 0,
+        end: 3,
+        zeroPad: 2,
+        suffix: ".png",
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: "stormtrooper-left",
+      frames: this.anims.generateFrameNames(this.onlinePlayerKey, {
+        prefix: "stormtrooper-left-",
         start: 0,
         end: 3,
         zeroPad: 2,
@@ -337,58 +385,6 @@ export class MapScene extends Scene {
         room.send("PLAYER_MOVEMENT_ENDED", { position: "front" })
       );
     }
-  }
-
-  private createOnlinePlayerAnimations() {
-    // onlinePlayer animations
-    this.anims.create({
-      key: "onlinePlayer-left-walk",
-      frames: this.anims.generateFrameNames("players", {
-        start: 0,
-        end: 3,
-        zeroPad: 3,
-        prefix: "bob_left_walk.",
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: "onlinePlayer-right-walk",
-      frames: this.anims.generateFrameNames("players", {
-        start: 0,
-        end: 3,
-        zeroPad: 3,
-        prefix: "bob_right_walk.",
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: "onlinePlayer-front-walk",
-      frames: this.anims.generateFrameNames("players", {
-        start: 0,
-        end: 3,
-        zeroPad: 3,
-        prefix: "bob_front_walk.",
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: "onlinePlayer-back-walk",
-      frames: this.anims.generateFrameNames("players", {
-        start: 0,
-        end: 3,
-        zeroPad: 3,
-        prefix: "bob_back_walk.",
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
   }
 
   private updateRoom() {

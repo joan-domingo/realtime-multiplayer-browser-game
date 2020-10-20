@@ -24,10 +24,13 @@ export default class OnlinePlayer extends Sprite {
     this.scene.physics.world.enableBody(this);
     this.scene.physics.add.collider(this, config.worldLayer);
 
-    this.setTexture("players", "bob_front.png").setScale(0.8, 0.8);
+    this.setTexture("players", "stormtrooper-front-00.png").setScale(
+      1 / 2,
+      1 / 2
+    );
 
     // Player Offset
-    this.body.setOffset(0, 24);
+    this.body.setOffset(0, 0);
 
     // Display playerId above player
     this.playerNickname = this.scene.add.text(
@@ -36,14 +39,16 @@ export default class OnlinePlayer extends Sprite {
       config.playerId,
       {
         fontSize: 8,
-        resolution: 1,
+        resolution: 10,
       }
     );
+
+    this.playerNickname.setDepth(11);
   }
 
   isWalking(position: string, x: number, y: number) {
     // Player
-    this.anims.play(`onlinePlayer-${position}-walk`, true);
+    this.anims.play(`stormtrooper-${position}`, true);
     this.setPosition(x, y);
 
     // PlayerId
@@ -53,7 +58,7 @@ export default class OnlinePlayer extends Sprite {
 
   stopWalking(position: string) {
     this.anims.stop();
-    this.setTexture("players", `bob_${position}.png`);
+    this.setTexture("players", `stormtrooper-${position}-00.png`);
   }
 
   destroy() {

@@ -17,7 +17,7 @@ const config: GameConfig = {
       gravity: {
         y: 0,
       },
-      debug: true, // set to true to view zones
+      debug: process.env.NODE_ENV === "development", // set to true to view zones
     },
   },
   render: {
