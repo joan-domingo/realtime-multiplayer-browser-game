@@ -12,12 +12,20 @@ import PlayerLaser from "../players/PlayerLaser";
 import Key = Phaser.Input.Keyboard.Key;
 
 export class MapScene extends Scene {
+  // map
+  private tileMapKey: string;
+  private tileSetKey: string;
+  // player
+  private playerKey: string;
+  private playerTextureUrl: string;
+  private playerAtlastUrl: string;
+  // online player
+  private onlinePlayerKey: string;
+
   map: Tilemap;
   player: Player;
   cursors: CursorKeys;
   obstaclesLayer: StaticTilemapLayer;
-  bottomLayer: StaticTilemapLayer;
-  aboveLayer: StaticTilemapLayer;
   socketKey: boolean;
   sfx: SpecialEffects;
   playerLasers: Group;
@@ -26,33 +34,36 @@ export class MapScene extends Scene {
   private playerShootTick: number;
   keySpace: Key;
 
-  private tilemapKey: string;
-  private tilesetKey: string;
-
   constructor() {
     super("MapScene");
   }
 
   init(data: any): void {
-    this.tilemapKey = "/assets/tilemaps/test_map";
-    this.tilesetKey = "/assets/tilesets/tiles";
+    // map
+    this.tileMapKey = "/assets/tilemaps/test_map";
+    this.tileSetKey = "/assets/tilesets/tiles";
+
+    // player
+    this.playerKey = "currentPlayer";
+    this.playerTextureUrl = "assets/atlas/sprite_jedi.png";
+    this.playerAtlastUrl = "assets/atlas/sprite_jedi.json";
   }
 
   preload() {
-    this.load.image(this.tilesetKey);
-    this.load.tilemapTiledJSON(this.tilemapKey);
+    this.load.image(this.tileSetKey);
+    this.load.tilemapTiledJSON(this.tileMapKey);
 
     // Load player atlas
     this.load.atlas(
-      "currentPlayer",
-      "assets/atlas/atlas.png",
-      "assets/atlas/atlas.json"
+      this.playerKey,
+      this.playerTextureUrl,
+      this.playerAtlastUrl
     );
 
     // Load online player atlas
     this.load.atlas(
       "players",
-      "assets/images/players/players.png",
+      "assets/atlas/players.png",
       "assets/atlas/players.json"
     );
 
@@ -115,7 +126,7 @@ export class MapScene extends Scene {
   private createMap() {
     // create the map
     this.map = this.make.tilemap({
-      key: this.tilemapKey,
+      key: this.tileMapKey,
     });
 
     // Set current map Bounds
@@ -126,13 +137,13 @@ export class MapScene extends Scene {
       this.map.heightInPixels
     );
 
-    const tileSetName = MapScene.getDefaultTilesetName(this.tilesetKey);
-    const tileSet = this.map.addTilesetImage(tileSetName, this.tilesetKey);
+    const tileSetName = MapScene.getDefaultTilesetName(this.tileSetKey);
+    const tileSet = this.map.addTilesetImage(tileSetName, this.tileSetKey);
 
     // creating the layers
-    this.bottomLayer = this.map.createStaticLayer("floor", tileSet, 0, 0);
+    this.map.createStaticLayer("floor", tileSet, 0, 0);
     this.obstaclesLayer = this.map.createStaticLayer("walls", tileSet, 0, 0);
-    this.aboveLayer = this.map.createStaticLayer("top", tileSet, 0, 0);
+    const aboveLayer = this.map.createStaticLayer("top", tileSet, 0, 0);
 
     // Create collision for obstacles layer
     this.obstaclesLayer.setCollision([
@@ -152,7 +163,7 @@ export class MapScene extends Scene {
 
     // Layer hides player
     this.obstaclesLayer.setDepth(10);
-    this.aboveLayer.setDepth(10);
+    aboveLayer.setDepth(10);
   }
 
   private static getDefaultTilesetName(tilesetKey: string): string {
@@ -163,45 +174,49 @@ export class MapScene extends Scene {
     // Create the player's walking animations from the texture currentPlayer. These are stored in the global
     // animation manager so any sprite can access them.
     this.anims.create({
-      key: "misa-left-walk",
+      key: "jedi-front",
       frames: this.anims.generateFrameNames("currentPlayer", {
-        prefix: "misa-left-walk.",
         start: 0,
         end: 3,
-        zeroPad: 3,
+        zeroPad: 2,
+        prefix: "jedi-front-",
+        suffix: ".png",
       }),
       frameRate: 10,
       repeat: -1,
     });
     this.anims.create({
-      key: "misa-right-walk",
+      key: "jedi-back",
       frames: this.anims.generateFrameNames("currentPlayer", {
-        prefix: "misa-right-walk.",
+        prefix: "jedi-back-",
         start: 0,
         end: 3,
-        zeroPad: 3,
+        zeroPad: 2,
+        suffix: ".png",
       }),
       frameRate: 10,
       repeat: -1,
     });
     this.anims.create({
-      key: "misa-front-walk",
+      key: "jedi-right",
       frames: this.anims.generateFrameNames("currentPlayer", {
-        prefix: "misa-front-walk.",
+        prefix: "jedi-right-",
         start: 0,
         end: 3,
-        zeroPad: 3,
+        zeroPad: 2,
+        suffix: ".png",
       }),
       frameRate: 10,
       repeat: -1,
     });
     this.anims.create({
-      key: "misa-back-walk",
+      key: "jedi-left",
       frames: this.anims.generateFrameNames("currentPlayer", {
-        prefix: "misa-back-walk.",
+        prefix: "jedi-left-",
         start: 0,
         end: 3,
-        zeroPad: 3,
+        zeroPad: 2,
+        suffix: ".png",
       }),
       frameRate: 10,
       repeat: -1,
@@ -213,7 +228,7 @@ export class MapScene extends Scene {
     this.player = new Player({
       scene: this,
       worldLayer: this.obstaclesLayer,
-      key: "currentplayer",
+      key: this.playerKey,
       x: 50,
       y: 100,
     });

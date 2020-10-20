@@ -1,9 +1,6 @@
 import GameConfig = Phaser.Types.Core.GameConfig;
 import { Game } from "phaser";
 import { Client, Room } from "colyseus.js";
-import { WelcomeScene } from "./scenes/welcomeScene";
-import { GameScene } from "./scenes/gameScene";
-import { ScoreScene } from "./scenes/scoreScene";
 import { InitialLoadingScene } from "./scenes/InitialLoadingScene";
 import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
 import OnlinePlayer from "./players/OnlinePlayer";
@@ -20,7 +17,7 @@ const config: GameConfig = {
       gravity: {
         y: 0,
       },
-      debug: false, // set to true to view zones
+      debug: true, // set to true to view zones
     },
   },
   render: {
@@ -29,14 +26,7 @@ const config: GameConfig = {
     // prevent pixel art from becoming blurre when scaled
     pixelArt: true,
   },
-  scene: [
-    InitialLoadingScene,
-    ErrorLoadingScene,
-    MapScene,
-    WelcomeScene,
-    GameScene,
-    ScoreScene,
-  ],
+  scene: [InitialLoadingScene, ErrorLoadingScene, MapScene],
 };
 
 // Load game

@@ -27,4 +27,5 @@ Open http://localhost:3000/ in your browser.
 
 ## Helpful tools
 * Map Editor: https://www.mapeditor.org/
+* Texture packer: https://www.codeandweb.com/texturepacker
 

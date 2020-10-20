@@ -13,7 +13,6 @@ export default class Player extends Sprite {
   oldPosition: { x: number; y: number };
   speed: number;
   playerNickname: Text;
-  playerTexturePosition: string;
   map: string;
 
   constructor(config: {
@@ -29,13 +28,16 @@ export default class Player extends Sprite {
     this.scene.physics.world.enableBody(this);
     this.scene.physics.add.collider(this, config.worldLayer);
 
-    this.setTexture("currentPlayer", `misa-front`).setScale(1 / 3, 1 / 3);
+    this.setTexture("currentPlayer", `jedi-front-00.png`).setScale(
+      1 / 2,
+      1 / 2
+    );
 
     // Register cursors for player movement
     this.cursors = this.scene.input.keyboard.createCursorKeys();
 
     // Player Offset
-    this.body.setOffset(0, 24);
+    this.body.setOffset(0, 0);
 
     // Player can't go out of the world
     this.body.setCollideWorldBounds(true);
@@ -52,11 +54,11 @@ export default class Player extends Sprite {
     // Player nickname text
     this.playerNickname = this.scene.add.text(
       this.x - this.width * 1.4,
-      0,
+      this.y - this.height / 2,
       "Player",
       {
         fontSize: 8,
-        resolution: 1,
+        resolution: 10,
       }
     );
     this.playerNickname.setDepth(11);
@@ -90,30 +92,31 @@ export default class Player extends Sprite {
 
     // Update the animation last and give left/right animations precedence over up/down animations
     if (this.cursors.left.isDown) {
-      this.anims.play("misa-left-walk", true);
+      this.anims.play("jedi-left", true);
     } else if (this.cursors.right.isDown) {
-      this.anims.play("misa-right-walk", true);
+      this.anims.play("jedi-right", true);
     } else if (this.cursors.up.isDown) {
-      this.anims.play("misa-back-walk", true);
+      this.anims.play("jedi-back", true);
     } else if (this.cursors.down.isDown) {
-      this.anims.play("misa-front-walk", true);
+      this.anims.play("jedi-front", true);
     } else {
       this.anims.stop();
 
       // If we were moving, pick and idle frame to use
-      if (prevVelocity.x < 0) this.setTexture("currentPlayer", "misa-left");
+      if (prevVelocity.x < 0)
+        this.setTexture("currentPlayer", "jedi-left-00.png");
       else if (prevVelocity.x > 0)
-        this.setTexture("currentPlayer", "misa-right");
+        this.setTexture("currentPlayer", "jedi-right-00.png");
       else if (prevVelocity.y < 0)
-        this.setTexture("currentPlayer", "misa-back");
+        this.setTexture("currentPlayer", "jedi-back-00.png");
       else if (prevVelocity.y > 0)
-        this.setTexture("currentPlayer", "misa-front");
+        this.setTexture("currentPlayer", "jedi-front-00.png");
     }
   }
 
   showPlayerNickname() {
     this.playerNickname.x = this.x - this.playerNickname.width / 2;
-    this.playerNickname.y = this.y - this.height / 4;
+    this.playerNickname.y = this.y - this.height / 2;
   }
 
   isMoved() {
