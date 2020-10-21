@@ -1,6 +1,5 @@
 import GameConfig = Phaser.Types.Core.GameConfig;
 import { Game } from "phaser";
-import { Client, Room } from "colyseus.js";
 import { InitialLoadingScene } from "./scenes/InitialLoadingScene";
 import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
 import OnlinePlayer from "./players/OnlinePlayer";
@@ -36,7 +35,7 @@ export const game = new Game(config);
 // Backend endpoint
 export const endpoint =
   process.env.NODE_ENV === "production"
-    ? location.origin.replace(/^http/, "ws")
+    ? "https://multiplayer-game-be.herokuapp.com/".replace(/^http/, "ws")
     : "ws://localhost:4000";
 
 // Backend (Colyseus) room
