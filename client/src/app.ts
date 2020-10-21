@@ -36,7 +36,7 @@ export const game = new Game(config);
 // Backend endpoint
 export const endpoint =
   process.env.NODE_ENV === "production"
-    ? location.origin.replace(/^http/, "ws")
+    ? "https://multiplayer-game-be.herokuapp.com/".replace(/^http/, "ws")
     : "ws://localhost:4000";
 
 // Backend (Colyseus) room
