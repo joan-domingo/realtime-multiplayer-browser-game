@@ -21,6 +21,7 @@ export default class Player extends Sprite {
     key: string;
     x: number;
     y: number;
+    nickname: string;
   }) {
     super(config.scene, config.x, config.y, config.key);
 
@@ -52,7 +53,7 @@ export default class Player extends Sprite {
     this.playerNickname = this.scene.add.text(
       this.x - this.width * 1.4,
       this.y - this.height / 2,
-      "Player",
+      config.nickname,
       {
         fontSize: 8,
         resolution: 10,

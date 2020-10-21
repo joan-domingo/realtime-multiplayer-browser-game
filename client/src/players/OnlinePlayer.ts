@@ -17,6 +17,7 @@ export default class OnlinePlayer extends Sprite {
     x: number;
     y: number;
     playerId: string;
+    nickname: string;
   }) {
     super(config.scene, config.x, config.y, config.playerId);
 
@@ -36,7 +37,7 @@ export default class OnlinePlayer extends Sprite {
     this.playerNickname = this.scene.add.text(
       this.x - this.width * 1.4,
       this.y - this.height / 2,
-      config.playerId,
+      config.nickname,
       {
         fontSize: 8,
         resolution: 10,

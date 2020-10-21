@@ -1,3 +1,9 @@
 export interface Players {
-  [key: string]: { x: number; y: number; map: string; sessionId: string };
+  [key: string]: {
+    x: number;
+    y: number;
+    map: string;
+    sessionId: string;
+    nickname: string;
+  };
 }

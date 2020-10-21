@@ -4,8 +4,8 @@ import { Players } from "./types";
 export class MyRoom extends Room {
   private players: Players = {};
 
-  onCreate(options: any) {
-    console.debug("ON CREATE");
+  onCreate(options: { nickname: string }) {
+    console.debug("ON CREATE", options);
 
     this.onMessage("PLAYER_MOVED", (player, data) => {
       this.players[player.sessionId].x = data.x;
@@ -16,6 +16,7 @@ export class MyRoom extends Room {
         {
           ...this.players[player.sessionId],
           position: data.position,
+          nickname: options.nickname,
         },
         { except: player }
       );
@@ -28,6 +29,7 @@ export class MyRoom extends Room {
           sessionId: player.sessionId,
           map: this.players[player.sessionId].map,
           position: data.position,
+          nickname: options.nickname,
         },
         { except: player }
       );
@@ -38,14 +40,15 @@ export class MyRoom extends Room {
     });
   }
 
-  onJoin(player: Client, options: any) {
-    console.debug("ON JOIN");
+  onJoin(player: Client, options: { nickname: string }) {
+    console.debug("ON JOIN", options);
 
     this.players[player.sessionId] = {
       sessionId: player.sessionId,
       map: "town",
       x: 352,
       y: 1216,
+      nickname: options.nickname,
     };
 
     setTimeout(
@@ -63,7 +66,7 @@ export class MyRoom extends Room {
   }
 
   onLeave(player: Client, consented: boolean) {
-    console.debug("ON LEAVE");
+    console.debug("ON LEAVE", player);
 
     this.broadcast("PLAYER_LEFT", {
       sessionId: player.sessionId,

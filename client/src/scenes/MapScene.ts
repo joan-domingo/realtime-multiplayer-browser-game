@@ -2,7 +2,7 @@ import { Scene } from "phaser";
 import Tilemap = Phaser.Tilemaps.Tilemap;
 import CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
 import StaticTilemapLayer = Phaser.Tilemaps.StaticTilemapLayer;
-import { onlinePlayers, room } from "../app";
+import { onlinePlayers } from "../app";
 import { Room } from "colyseus.js";
 import OnlinePlayer from "../players/OnlinePlayer";
 import Player from "../players/Player";
@@ -12,6 +12,8 @@ import PlayerLaser from "../players/PlayerLaser";
 import Key = Phaser.Input.Keyboard.Key;
 
 export class MapScene extends Scene {
+  // room
+  private room: Room;
   // map
   private tileMapKey: string;
   private tileSetKey: string;
@@ -19,6 +21,7 @@ export class MapScene extends Scene {
   private playerKey: string;
   private playerTextureUrl: string;
   private playerAtlastUrl: string;
+  private playerNickname: string;
   // online player
   private onlinePlayerKey: string;
   private onlinePlayerTextureUrl: string;
@@ -40,7 +43,10 @@ export class MapScene extends Scene {
     super("MapScene");
   }
 
-  init(data: any): void {
+  init(data: { nickname: string; room: Room }): void {
+    // room
+    this.room = data.room;
+
     // map
     this.tileMapKey = "/assets/tilemaps/test_map";
     this.tileSetKey = "/assets/tilesets/tiles";
@@ -49,6 +55,7 @@ export class MapScene extends Scene {
     this.playerKey = "currentPlayer";
     this.playerTextureUrl = "assets/atlas/sprite_jedi.png";
     this.playerAtlastUrl = "assets/atlas/sprite_jedi.json";
+    this.playerNickname = data.nickname;
 
     // Online player
     this.onlinePlayerKey = "players";
@@ -279,6 +286,7 @@ export class MapScene extends Scene {
       key: this.playerKey,
       x: 50,
       y: 100,
+      nickname: this.playerNickname,
     });
   }
 
@@ -302,30 +310,26 @@ export class MapScene extends Scene {
     if (this.cursors.left.isDown) {
       if (this.socketKey) {
         if (this.player.isMoved()) {
-          room.then((room: any) =>
-            room.send("PLAYER_MOVED", {
-              position: "left",
-              // @ts-ignore
-              x: this.player.x,
-              // @ts-ignore
-              y: this.player.y,
-            })
-          );
+          this.room.send("PLAYER_MOVED", {
+            position: "left",
+            // @ts-ignore
+            x: this.player.x,
+            // @ts-ignore
+            y: this.player.y,
+          });
         }
         this.socketKey = false;
       }
     } else if (this.cursors.right.isDown) {
       if (this.socketKey) {
         if (this.player.isMoved()) {
-          room.then((room: any) =>
-            room.send("PLAYER_MOVED", {
-              position: "right",
-              // @ts-ignore
-              x: this.player.x,
-              // @ts-ignore
-              y: this.player.y,
-            })
-          );
+          this.room.send("PLAYER_MOVED", {
+            position: "right",
+            // @ts-ignore
+            x: this.player.x,
+            // @ts-ignore
+            y: this.player.y,
+          });
         }
         this.socketKey = false;
       }
@@ -335,30 +339,26 @@ export class MapScene extends Scene {
     if (this.cursors.up.isDown) {
       if (this.socketKey) {
         if (this.player.isMoved()) {
-          room.then((room: any) =>
-            room.send("PLAYER_MOVED", {
-              position: "back",
-              // @ts-ignore
-              x: this.player.x,
-              // @ts-ignore
-              y: this.player.y,
-            })
-          );
+          this.room.send("PLAYER_MOVED", {
+            position: "back",
+            // @ts-ignore
+            x: this.player.x,
+            // @ts-ignore
+            y: this.player.y,
+          });
         }
         this.socketKey = false;
       }
     } else if (this.cursors.down.isDown) {
       if (this.socketKey) {
         if (this.player.isMoved()) {
-          room.then((room: any) =>
-            room.send("PLAYER_MOVED", {
-              position: "front",
-              // @ts-ignore
-              x: this.player.x,
-              // @ts-ignore
-              y: this.player.y,
-            })
-          );
+          this.room.send("PLAYER_MOVED", {
+            position: "front",
+            // @ts-ignore
+            x: this.player.x,
+            // @ts-ignore
+            y: this.player.y,
+          });
         }
         this.socketKey = false;
       }
@@ -366,91 +366,85 @@ export class MapScene extends Scene {
 
     // Horizontal movement ended
     if (Phaser.Input.Keyboard.JustUp(this.cursors.left) === true) {
-      room.then((room: any) =>
-        room.send("PLAYER_MOVEMENT_ENDED", { position: "left" })
-      );
+      this.room.send("PLAYER_MOVEMENT_ENDED", { position: "left" });
     } else if (Phaser.Input.Keyboard.JustUp(this.cursors.right) === true) {
-      room.then((room: any) =>
-        room.send("PLAYER_MOVEMENT_ENDED", { position: "right" })
-      );
+      this.room.send("PLAYER_MOVEMENT_ENDED", { position: "right" });
     }
 
     // Vertical movement ended
     if (Phaser.Input.Keyboard.JustUp(this.cursors.up) === true) {
-      room.then((room: any) =>
-        room.send("PLAYER_MOVEMENT_ENDED", { position: "back" })
-      );
+      this.room.send("PLAYER_MOVEMENT_ENDED", { position: "back" });
     } else if (Phaser.Input.Keyboard.JustUp(this.cursors.down) === true) {
-      room.then((room: any) =>
-        room.send("PLAYER_MOVEMENT_ENDED", { position: "front" })
-      );
+      this.room.send("PLAYER_MOVEMENT_ENDED", { position: "front" });
     }
   }
 
   private updateRoom() {
-    room.then((room: Room) => {
-      room.onMessage("CURRENT_PLAYERS", (data) => {
-        console.log("CURRENT_PLAYERS");
-        Object.keys(data.players).forEach((playerId) => {
-          let player = data.players[playerId];
+    this.room.onMessage("CURRENT_PLAYERS", (data) => {
+      console.debug("CURRENT_PLAYERS");
+      Object.keys(data.players).forEach((playerId) => {
+        let player = data.players[playerId];
 
-          if (playerId !== room.sessionId) {
-            onlinePlayers[player.sessionId] = new OnlinePlayer({
-              scene: this,
-              playerId: player.sessionId,
-              key: player.sessionId,
-              x: player.x,
-              y: player.y,
-            });
-          }
+        if (playerId !== this.room.sessionId) {
+          onlinePlayers[player.sessionId] = new OnlinePlayer({
+            scene: this,
+            playerId: player.sessionId,
+            key: player.sessionId,
+            x: player.x,
+            y: player.y,
+            nickname: player.nickname,
+          });
+        }
+      });
+    });
+    this.room.onMessage("PLAYER_JOINED", (data) => {
+      console.debug("PLAYER_JOINED", data.nickname);
+      if (!onlinePlayers[data.sessionId]) {
+        onlinePlayers[data.sessionId] = new OnlinePlayer({
+          scene: this,
+          playerId: data.sessionId,
+          key: data.sessionId,
+          x: data.x,
+          y: data.y,
+          nickname: data.nickname,
         });
-      });
-      room.onMessage("PLAYER_JOINED", (data) => {
-        console.log("PLAYER_JOINED");
-        if (!onlinePlayers[data.sessionId]) {
-          onlinePlayers[data.sessionId] = new OnlinePlayer({
-            scene: this,
-            playerId: data.sessionId,
-            key: data.sessionId,
-            x: data.x,
-            y: data.y,
-          });
-        }
-      });
-      room.onMessage("PLAYER_LEFT", (data) => {
-        console.log("PLAYER_LEFT");
-        if (onlinePlayers[data.sessionId]) {
-          onlinePlayers[data.sessionId].destroy();
-          delete onlinePlayers[data.sessionId];
-        }
-      });
-      room.onMessage("PLAYER_MOVED", (data) => {
-        if (!onlinePlayers[data.sessionId].scene) {
-          onlinePlayers[data.sessionId] = new OnlinePlayer({
-            scene: this,
-            playerId: data.sessionId,
-            key: data.sessionId,
-            x: data.x,
-            y: data.y,
-          });
-        }
-        // Start animation and set sprite position
-        onlinePlayers[data.sessionId].isWalking(data.position, data.x, data.y);
-      });
-      room.onMessage("PLAYER_MOVEMENT_ENDED", (data) => {
-        // If player isn't registered in this scene (map changing bug..)
-        if (!onlinePlayers[data.sessionId].scene) {
-          onlinePlayers[data.sessionId] = new OnlinePlayer({
-            scene: this,
-            playerId: data.sessionId,
-            key: data.sessionId,
-            x: data.x,
-            y: data.y,
-          });
-        }
-        // Stop animation & set sprite texture
-        onlinePlayers[data.sessionId].stopWalking(data.position);
-      });
+      }
+    });
+    this.room.onMessage("PLAYER_LEFT", (data) => {
+      console.debug("PLAYER_LEFT");
+      if (onlinePlayers[data.sessionId]) {
+        onlinePlayers[data.sessionId].destroy();
+        delete onlinePlayers[data.sessionId];
+      }
+    });
+    this.room.onMessage("PLAYER_MOVED", (data) => {
+      if (!onlinePlayers[data.sessionId].scene) {
+        onlinePlayers[data.sessionId] = new OnlinePlayer({
+          scene: this,
+          playerId: data.sessionId,
+          key: data.sessionId,
+          x: data.x,
+          y: data.y,
+          nickname: data.nickname,
+        });
+      }
+      // Start animation and set sprite position
+      onlinePlayers[data.sessionId].isWalking(data.position, data.x, data.y);
+    });
+    this.room.onMessage("PLAYER_MOVEMENT_ENDED", (data) => {
+      // If player isn't registered in this scene (map changing bug..)
+      if (!onlinePlayers[data.sessionId].scene) {
+        onlinePlayers[data.sessionId] = new OnlinePlayer({
+          scene: this,
+          playerId: data.sessionId,
+          key: data.sessionId,
+          x: data.x,
+          y: data.y,
+          nickname: data.nickname,
+        });
+      }
+      // Stop animation & set sprite texture
+      onlinePlayers[data.sessionId].stopWalking(data.position);
     });
   }
 

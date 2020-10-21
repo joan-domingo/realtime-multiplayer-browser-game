@@ -5,6 +5,7 @@ import { InitialLoadingScene } from "./scenes/InitialLoadingScene";
 import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
 import OnlinePlayer from "./players/OnlinePlayer";
 import { MapScene } from "./scenes/MapScene";
+import { EnterNameScene } from "./scenes/EnterNameScene";
 
 const config: GameConfig = {
   type: Phaser.AUTO,
@@ -26,28 +27,19 @@ const config: GameConfig = {
     // prevent pixel art from becoming blurre when scaled
     pixelArt: true,
   },
-  scene: [InitialLoadingScene, ErrorLoadingScene, MapScene],
+  scene: [EnterNameScene, InitialLoadingScene, ErrorLoadingScene, MapScene],
 };
 
 // Load game
-const game = new Game(config);
+export const game = new Game(config);
 
-const endpoint =
+// Backend endpoint
+export const endpoint =
   process.env.NODE_ENV === "production"
     ? location.origin.replace(/^http/, "ws")
     : "ws://localhost:4000";
 
-// Join server room
-export const room = new Client(endpoint)
-  .joinOrCreate("Room1")
-  .then((room: Room) => {
-    console.log(room.sessionId, "joined", room.name);
-    game.scene.switch("InitialLoadingScene", "MapScene");
-    return room;
-  })
-  .catch((e: Error) => {
-    console.log("JOIN ERROR", e);
-    game.scene.switch("InitialLoadingScene", "ErrorLoadingScene");
-  });
+// Backend (Colyseus) room
+// export let room: undefined | Room = undefined;
 
 export const onlinePlayers: OnlinePlayer[] = [];
