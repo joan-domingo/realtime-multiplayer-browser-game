@@ -2,7 +2,7 @@
 
 ## !! In Development !!
 
-Find the current state published in: https://multiplayer-game-be.herokuapp.com/
+Find the current state published in: https://master.dirptxqd87yvl.amplifyapp.com/
 
 ## Set Up
 
