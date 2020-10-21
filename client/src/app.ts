@@ -1,6 +1,5 @@
 import GameConfig = Phaser.Types.Core.GameConfig;
 import { Game } from "phaser";
-import { Client, Room } from "colyseus.js";
 import { InitialLoadingScene } from "./scenes/InitialLoadingScene";
 import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
 import OnlinePlayer from "./players/OnlinePlayer";
