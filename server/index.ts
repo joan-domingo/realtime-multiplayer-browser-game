@@ -1,9 +1,9 @@
 import http from "http";
 import express from "express";
 import cors from "cors";
-import path from "path";
 import { Server } from "colyseus";
-import { MyRoom } from "./MyRoom";
+import { MyRoom } from "./rooms/MyRoom";
+import { Chat } from "./rooms/ChatRoom";
 
 const port = Number(process.env.PORT || 4000);
 const app = express();
@@ -17,6 +17,7 @@ const gameServer = new Server({
 });
 
 gameServer.define("Room1", MyRoom);
+gameServer.define("Chat", Chat);
 
 gameServer.listen(port);
 console.log(`Listening on ws://localhost:${port}`);

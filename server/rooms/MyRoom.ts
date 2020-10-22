@@ -1,5 +1,5 @@
 import { Client, Room } from "colyseus";
-import { Players } from "./types";
+import { Players } from "../types";
 
 export class MyRoom extends Room {
   private players: Players = {};
