@@ -2,7 +2,7 @@ import { Scene } from "phaser";
 import Tilemap = Phaser.Tilemaps.Tilemap;
 import CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
 import StaticTilemapLayer = Phaser.Tilemaps.StaticTilemapLayer;
-import { onlinePlayers } from "../app";
+import { onlinePlayers, roomClient } from "../app";
 import { Room } from "colyseus.js";
 import OnlinePlayer from "../players/OnlinePlayer";
 import Player from "../players/Player";
@@ -43,9 +43,9 @@ export class MapScene extends Scene {
     super("MapScene");
   }
 
-  init(data: { nickname: string; room: Room }): void {
+  init(data: { nickname: string }): void {
     // room
-    this.room = data.room;
+    this.room = roomClient.getRoomInstance();
 
     // map
     this.tileMapKey = "/assets/tilemaps/test_map";

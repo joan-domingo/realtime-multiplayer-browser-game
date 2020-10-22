@@ -17,7 +17,7 @@ const gameServer = new Server({
 });
 
 gameServer.define("Room1", MyRoom);
-gameServer.define("Chat", Chat);
+gameServer.define("Chat", Chat).enableRealtimeListing();
 
 gameServer.listen(port);
 console.log(`Listening on ws://localhost:${port}`);

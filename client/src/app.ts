@@ -5,6 +5,8 @@ import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
 import OnlinePlayer from "./players/OnlinePlayer";
 import { MapScene } from "./scenes/MapScene";
 import { EnterNameScene } from "./scenes/EnterNameScene";
+import { ChatScene } from "./scenes/ChatScene";
+import { RoomClient } from "./RoomClient";
 
 const config: GameConfig = {
   type: Phaser.AUTO,
@@ -26,7 +28,13 @@ const config: GameConfig = {
     // prevent pixel art from becoming blurre when scaled
     pixelArt: true,
   },
-  scene: [EnterNameScene, InitialLoadingScene, ErrorLoadingScene, MapScene],
+  scene: [
+    EnterNameScene,
+    InitialLoadingScene,
+    ErrorLoadingScene,
+    MapScene,
+    ChatScene,
+  ],
 };
 
 // Load game
@@ -38,7 +46,30 @@ export const endpoint =
     ? "https://multiplayer-game-be.herokuapp.com/".replace(/^http/, "ws")
     : "ws://localhost:4000";
 
-// Backend (Colyseus) room
-// export let room: undefined | Room = undefined;
+export const roomClient = new RoomClient();
 
 export const onlinePlayers: OnlinePlayer[] = [];
+
+const inputMessage = document.getElementById(
+  "inputMessage"
+) as HTMLInputElement;
+export const messagesElement = document.getElementById("messages");
+
+window.addEventListener("keydown", (event) => {
+  if (event.which === 13) {
+    sendMessage();
+  }
+  if (event.which === 32) {
+    if (document.activeElement === inputMessage) {
+      inputMessage.value = inputMessage.value + " ";
+    }
+  }
+});
+
+function sendMessage() {
+  let message = inputMessage.value;
+  if (message) {
+    inputMessage.value = "";
+    roomClient.getRoomInstance().send("message", message);
+  }
+}

@@ -1,14 +1,15 @@
 import { Scene } from "phaser";
-import { endpoint, game } from "../app";
+import { endpoint, roomClient } from "../app";
 import { Client, Room } from "colyseus.js";
 
 export class EnterNameScene extends Scene {
   private onSubmitNickname = (nickname: string) => {
     new Client(endpoint)
-      .joinOrCreate("Room1", { nickname })
+      .joinOrCreate("Chat", { nickname })
       .then((room: Room) => {
+        roomClient.setRoomInstance(room);
         console.debug(nickname, "joined", room.name);
-        this.scene.start("MapScene", { nickname, room });
+        this.scene.start("ChatScene", { nickname });
       })
       .catch((e: Error) => {
         console.debug("JOIN ERROR", e);
