@@ -4,9 +4,9 @@ import { InitialLoadingScene } from "./scenes/InitialLoadingScene";
 import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
 import OnlinePlayer from "./players/OnlinePlayer";
 import { MapScene } from "./scenes/MapScene";
-import { EnterNameScene } from "./scenes/EnterNameScene";
 import { RoomClient } from "./RoomClient";
 import { Chat } from "./Chat";
+import { EnterNickNameScene } from "./scenes/EnterNickname";
 
 // Load game
 const config: GameConfig = {
@@ -29,7 +29,10 @@ const config: GameConfig = {
     // prevent pixel art from becoming blurre when scaled
     pixelArt: true,
   },
-  scene: [EnterNameScene, InitialLoadingScene, ErrorLoadingScene, MapScene],
+  scene: [EnterNickNameScene, InitialLoadingScene, ErrorLoadingScene, MapScene],
+  dom: {
+    createContainer: true,
+  },
 };
 new Game(config);
 
