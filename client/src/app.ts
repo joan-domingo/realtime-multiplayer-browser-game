@@ -5,7 +5,6 @@ import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
 import OnlinePlayer from "./players/OnlinePlayer";
 import { MapScene } from "./scenes/MapScene";
 import { EnterNameScene } from "./scenes/EnterNameScene";
-import { ChatScene } from "./scenes/ChatScene";
 import { RoomClient } from "./RoomClient";
 
 const config: GameConfig = {
@@ -28,13 +27,7 @@ const config: GameConfig = {
     // prevent pixel art from becoming blurre when scaled
     pixelArt: true,
   },
-  scene: [
-    EnterNameScene,
-    InitialLoadingScene,
-    ErrorLoadingScene,
-    MapScene,
-    ChatScene,
-  ],
+  scene: [EnterNameScene, InitialLoadingScene, ErrorLoadingScene, MapScene],
 };
 
 // Load game
@@ -50,10 +43,13 @@ export const roomClient = new RoomClient();
 
 export const onlinePlayers: OnlinePlayer[] = [];
 
-const inputMessage = document.getElementById(
+export const inputMessage = document.getElementById(
   "inputMessage"
 ) as HTMLInputElement;
-export const messagesElement = document.getElementById("messages");
+
+export const messagesUL: HTMLUListElement = document.getElementById(
+  "messages"
+) as HTMLUListElement;
 
 window.addEventListener("keydown", (event) => {
   if (event.which === 13) {

@@ -5,11 +5,14 @@ import { Client, Room } from "colyseus.js";
 export class EnterNameScene extends Scene {
   private onSubmitNickname = (nickname: string) => {
     new Client(endpoint)
-      .joinOrCreate("Chat", { nickname })
+      .joinOrCreate("Room1", { nickname })
       .then((room: Room) => {
         roomClient.setRoomInstance(room);
-        console.debug(nickname, "joined", room.name);
-        this.scene.start("ChatScene", { nickname });
+        const chatContainer = document.getElementById(
+          "chatContainer"
+        ) as HTMLDivElement;
+        chatContainer.style.display = "block";
+        this.scene.start("MapScene", { nickname });
       })
       .catch((e: Error) => {
         console.debug("JOIN ERROR", e);
