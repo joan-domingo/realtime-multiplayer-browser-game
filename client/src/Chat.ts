@@ -19,7 +19,11 @@ export class Chat {
   readKeyboardEvents() {
     window.addEventListener("keydown", (event) => {
       if (event.which === 13) {
-        this.sendMessage();
+        if (this.inputMessage === document.activeElement) {
+          this.sendMessage();
+        } else {
+          this.inputMessage.focus();
+        }
       }
       if (event.which === 32) {
         if (document.activeElement === this.inputMessage) {
@@ -35,6 +39,8 @@ export class Chat {
       this.roomClient.getRoomInstance().send("message", message);
       this.inputMessage.value = "";
     }
+    // focus back on the game
+    this.inputMessage.blur();
   }
 
   readUpdates() {

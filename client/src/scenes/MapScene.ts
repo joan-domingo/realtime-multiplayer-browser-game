@@ -381,7 +381,7 @@ export class MapScene extends Scene {
 
   private updateRoom() {
     this.room.onMessage("CURRENT_PLAYERS", (data) => {
-      console.debug("CURRENT_PLAYERS");
+      // console.debug("CURRENT_PLAYERS");
       Object.keys(data.players).forEach((playerId) => {
         let player = data.players[playerId];
 
