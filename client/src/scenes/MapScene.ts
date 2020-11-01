@@ -2,7 +2,7 @@ import { Scene } from "phaser";
 import Tilemap = Phaser.Tilemaps.Tilemap;
 import CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
 import StaticTilemapLayer = Phaser.Tilemaps.StaticTilemapLayer;
-import { messagesUL, onlinePlayers, roomClient } from "../app";
+import { onlinePlayers, roomClient } from "../app";
 import { Room } from "colyseus.js";
 import OnlinePlayer from "../players/OnlinePlayer";
 import Player from "../players/Player";
@@ -137,8 +137,6 @@ export class MapScene extends Scene {
         faceColor: new Phaser.Display.Color(40, 39, 37, 255), // Color of colliding face edges
       });
     }
-
-    this.updateChat();
   }
 
   private createMap() {
@@ -498,22 +496,6 @@ export class MapScene extends Scene {
       },
       callbackScope: this,
       loop: true,
-    });
-  }
-
-  private updateChat() {
-    this.room.onStateChange((state: { messages: string[] }) => {
-      while (messagesUL.firstChild) {
-        messagesUL.removeChild(messagesUL.firstChild);
-      }
-
-      state.messages.forEach((msg) => {
-        const messageLI = document.createElement("li") as HTMLLIElement;
-        messageLI.textContent = msg;
-        messagesUL.append(messageLI);
-      });
-
-      (messagesUL.lastChild as HTMLLIElement).scrollIntoView();
     });
   }
 }

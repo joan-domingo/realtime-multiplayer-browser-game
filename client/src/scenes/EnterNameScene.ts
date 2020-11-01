@@ -1,5 +1,5 @@
 import { Scene } from "phaser";
-import { endpoint, roomClient } from "../app";
+import { chat, endpoint, roomClient } from "../app";
 import { Client, Room } from "colyseus.js";
 
 export class EnterNameScene extends Scene {
@@ -8,10 +8,7 @@ export class EnterNameScene extends Scene {
       .joinOrCreate("Room1", { nickname })
       .then((room: Room) => {
         roomClient.setRoomInstance(room);
-        const chatContainer = document.getElementById(
-          "chatContainer"
-        ) as HTMLDivElement;
-        chatContainer.style.display = "block";
+        chat.readUpdates();
         this.scene.start("MapScene", { nickname });
       })
       .catch((e: Error) => {

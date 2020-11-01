@@ -6,7 +6,9 @@ import OnlinePlayer from "./players/OnlinePlayer";
 import { MapScene } from "./scenes/MapScene";
 import { EnterNameScene } from "./scenes/EnterNameScene";
 import { RoomClient } from "./RoomClient";
+import { Chat } from "./Chat";
 
+// Load game
 const config: GameConfig = {
   type: Phaser.AUTO,
   parent: "content",
@@ -29,9 +31,7 @@ const config: GameConfig = {
   },
   scene: [EnterNameScene, InitialLoadingScene, ErrorLoadingScene, MapScene],
 };
-
-// Load game
-export const game = new Game(config);
+new Game(config);
 
 // Backend endpoint
 export const endpoint =
@@ -39,33 +39,11 @@ export const endpoint =
     ? "https://multiplayer-game-be.herokuapp.com/".replace(/^http/, "ws")
     : "ws://localhost:4000";
 
+// Room client
 export const roomClient = new RoomClient();
 
+// Online players
 export const onlinePlayers: OnlinePlayer[] = [];
 
-export const inputMessage = document.getElementById(
-  "inputMessage"
-) as HTMLInputElement;
-
-export const messagesUL: HTMLUListElement = document.getElementById(
-  "messages"
-) as HTMLUListElement;
-
-window.addEventListener("keydown", (event) => {
-  if (event.which === 13) {
-    sendMessage();
-  }
-  if (event.which === 32) {
-    if (document.activeElement === inputMessage) {
-      inputMessage.value = inputMessage.value + " ";
-    }
-  }
-});
-
-function sendMessage() {
-  let message = inputMessage.value;
-  if (message) {
-    inputMessage.value = "";
-    roomClient.getRoomInstance().send("message", message);
-  }
-}
+// Chat
+export const chat = new Chat(roomClient);
