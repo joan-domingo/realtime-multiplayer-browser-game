@@ -51,7 +51,9 @@ export class MyRoom extends Room {
         ":",
         message
       );*/
-      this.state.messages.push(`${options.nickname}: ${message}`);
+      this.state.messages.push(
+        `${this.getPlayerNickname(player.sessionId)}: ${message}`
+      );
     });
 
     this.onMessage("*", (client, type) => {
@@ -89,8 +91,9 @@ export class MyRoom extends Room {
 
   onLeave(player: Client, consented: boolean) {
     // console.debug("ON LEAVE", player);
-    const playerNickname = this.players[player.sessionId].nickname;
-    this.state.messages.push(`${playerNickname} left.`);
+    this.state.messages.push(
+      `${this.getPlayerNickname(player.sessionId)} left.`
+    );
 
     this.broadcast("PLAYER_LEFT", {
       sessionId: player.sessionId,
@@ -101,5 +104,9 @@ export class MyRoom extends Room {
 
   onDispose() {
     // console.debug("ON DISPOSE");
+  }
+
+  getPlayerNickname(sessionId: string): string {
+    return this.players[sessionId].nickname;
   }
 }
