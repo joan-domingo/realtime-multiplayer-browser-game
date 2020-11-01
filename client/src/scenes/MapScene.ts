@@ -26,10 +26,15 @@ export class MapScene extends Scene {
   private onlinePlayerKey: string;
   private onlinePlayerTextureUrl: string;
   private onlinePlayerAtlastUrl: string;
+  // controls
+  cursors: CursorKeys;
+  keyA: Key;
+  keyS: Key;
+  keyD: Key;
+  keyW: Key;
 
   map: Tilemap;
   player: Player;
-  cursors: CursorKeys;
   obstaclesLayer: StaticTilemapLayer;
   socketKey: boolean;
   sfx: SpecialEffects;
@@ -37,7 +42,6 @@ export class MapScene extends Scene {
   enemyLasers: Group;
   private playerShootDelay: number;
   private playerShootTick: number;
-  keySpace: Key;
 
   constructor() {
     super("MapScene");
@@ -104,9 +108,10 @@ export class MapScene extends Scene {
 
     // user input
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.keySpace = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.SPACE
-    );
+    this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
 
     // React to room changes
     this.updateRoom();
@@ -307,7 +312,7 @@ export class MapScene extends Scene {
     this.player.update(time, delta);
 
     // Horizontal movement
-    if (this.cursors.left.isDown) {
+    if (this.cursors.left.isDown || this.keyA.isDown) {
       if (this.socketKey) {
         if (this.player.isMoved()) {
           this.room.send("PLAYER_MOVED", {
@@ -320,7 +325,7 @@ export class MapScene extends Scene {
         }
         this.socketKey = false;
       }
-    } else if (this.cursors.right.isDown) {
+    } else if (this.cursors.right.isDown || this.keyD.isDown) {
       if (this.socketKey) {
         if (this.player.isMoved()) {
           this.room.send("PLAYER_MOVED", {
@@ -336,7 +341,7 @@ export class MapScene extends Scene {
     }
 
     // Vertical movement
-    if (this.cursors.up.isDown) {
+    if (this.cursors.up.isDown || this.keyW.isDown) {
       if (this.socketKey) {
         if (this.player.isMoved()) {
           this.room.send("PLAYER_MOVED", {
@@ -349,7 +354,7 @@ export class MapScene extends Scene {
         }
         this.socketKey = false;
       }
-    } else if (this.cursors.down.isDown) {
+    } else if (this.cursors.down.isDown || this.keyS.isDown) {
       if (this.socketKey) {
         if (this.player.isMoved()) {
           this.room.send("PLAYER_MOVED", {
@@ -365,16 +370,20 @@ export class MapScene extends Scene {
     }
 
     // Horizontal movement ended
-    if (Phaser.Input.Keyboard.JustUp(this.cursors.left) === true) {
+    if (Phaser.Input.Keyboard.JustUp(this.cursors.left || this.keyA) === true) {
       this.room.send("PLAYER_MOVEMENT_ENDED", { position: "left" });
-    } else if (Phaser.Input.Keyboard.JustUp(this.cursors.right) === true) {
+    } else if (
+      Phaser.Input.Keyboard.JustUp(this.cursors.right || this.keyD) === true
+    ) {
       this.room.send("PLAYER_MOVEMENT_ENDED", { position: "right" });
     }
 
     // Vertical movement ended
-    if (Phaser.Input.Keyboard.JustUp(this.cursors.up) === true) {
+    if (Phaser.Input.Keyboard.JustUp(this.cursors.up || this.keyW) === true) {
       this.room.send("PLAYER_MOVEMENT_ENDED", { position: "back" });
-    } else if (Phaser.Input.Keyboard.JustUp(this.cursors.down) === true) {
+    } else if (
+      Phaser.Input.Keyboard.JustUp(this.cursors.down || this.keyS) === true
+    ) {
       this.room.send("PLAYER_MOVEMENT_ENDED", { position: "front" });
     }
   }
@@ -398,7 +407,7 @@ export class MapScene extends Scene {
       });
     });
     this.room.onMessage("PLAYER_JOINED", (data) => {
-      console.debug("PLAYER_JOINED", data.nickname);
+      // console.debug("PLAYER_JOINED", data.nickname);
       if (!onlinePlayers[data.sessionId]) {
         onlinePlayers[data.sessionId] = new OnlinePlayer({
           scene: this,
@@ -411,7 +420,7 @@ export class MapScene extends Scene {
       }
     });
     this.room.onMessage("PLAYER_LEFT", (data) => {
-      console.debug("PLAYER_LEFT");
+      // console.debug("PLAYER_LEFT");
       if (onlinePlayers[data.sessionId]) {
         onlinePlayers[data.sessionId].destroy();
         delete onlinePlayers[data.sessionId];
@@ -478,10 +487,11 @@ export class MapScene extends Scene {
   }
 
   private updatePlayerShooting() {
+    const spaceKey = this.cursors.space;
     this.time.addEvent({
       delay: 0,
       callback: function () {
-        if (this.keySpace.isDown && this.player.active) {
+        if (spaceKey.isDown && this.player.active) {
           if (this.playerShootTick < this.playerShootDelay) {
             this.playerShootTick++;
           } else {

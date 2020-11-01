@@ -5,9 +5,16 @@ import CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
 import Body = Phaser.Physics.Arcade.Body;
 import Text = Phaser.GameObjects.Text;
 import { MapScene } from "../scenes/MapScene";
+import Key = Phaser.Input.Keyboard.Key;
 
 export default class Player extends Sprite {
+  // controls
   cursors: CursorKeys;
+  keyA: Key;
+  keyS: Key;
+  keyD: Key;
+  keyW: Key;
+
   scene: MapScene;
   body: Body;
   oldPosition: { x: number; y: number };
@@ -33,6 +40,18 @@ export default class Player extends Sprite {
 
     // Register cursors for player movement
     this.cursors = this.scene.input.keyboard.createCursorKeys();
+    this.keyA = this.scene.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.A
+    );
+    this.keyS = this.scene.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.S
+    );
+    this.keyD = this.scene.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.D
+    );
+    this.keyW = this.scene.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.W
+    );
 
     // Player Offset
     this.body.setOffset(0, 0);
@@ -72,16 +91,16 @@ export default class Player extends Sprite {
     this.body.setVelocity(0);
 
     // Horizontal movement
-    if (this.cursors.left.isDown) {
+    if (this.cursors.left.isDown || this.keyA.isDown) {
       this.body.setVelocityX(-this.speed);
-    } else if (this.cursors.right.isDown) {
+    } else if (this.cursors.right.isDown || this.keyD.isDown) {
       this.body.setVelocityX(this.speed);
     }
 
     // Vertical movement
-    if (this.cursors.up.isDown) {
+    if (this.cursors.up.isDown || this.keyW.isDown) {
       this.body.setVelocityY(-this.speed);
-    } else if (this.cursors.down.isDown) {
+    } else if (this.cursors.down.isDown || this.keyS.isDown) {
       this.body.setVelocityY(this.speed);
     }
 
@@ -89,13 +108,13 @@ export default class Player extends Sprite {
     this.body.velocity.normalize().scale(this.speed);
 
     // Update the animation last and give left/right animations precedence over up/down animations
-    if (this.cursors.left.isDown) {
+    if (this.cursors.left.isDown || this.keyA.isDown) {
       this.anims.play("jedi-left", true);
-    } else if (this.cursors.right.isDown) {
+    } else if (this.cursors.right.isDown || this.keyD.isDown) {
       this.anims.play("jedi-right", true);
-    } else if (this.cursors.up.isDown) {
+    } else if (this.cursors.up.isDown || this.keyW.isDown) {
       this.anims.play("jedi-back", true);
-    } else if (this.cursors.down.isDown) {
+    } else if (this.cursors.down.isDown || this.keyS.isDown) {
       this.anims.play("jedi-front", true);
     } else {
       this.anims.stop();
