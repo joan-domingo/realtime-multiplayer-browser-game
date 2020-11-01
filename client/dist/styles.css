@@ -1,0 +1,36 @@
+body {
+    background-color: powderblue;
+}
+h1 {
+    color: blue;
+}
+p {
+    color: red;
+}
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+.chatContainer {
+    margin: 0;
+    padding: 0;
+    display: none;
+}
+.chatArea {
+    height: 614px;
+    width: 300px;
+    background-color: white;
+    border: 1px solid black;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+}
+.chatArea ul {
+    list-style-type: none;
+    padding-left: 10px;
+}
+.inputMessage {
+    height: 20px;
+    width: 298px;
+    border: 1px solid black;
+}

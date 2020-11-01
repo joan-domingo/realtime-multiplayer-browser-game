@@ -1,9 +1,20 @@
 <!doctype html>
 <html>
-<head>
-    <title>Getting Started</title>
-</head>
-<body>
-<script src="bundle.js" type="application/javascript"></script>
-</body>
+    <head>
+        <meta charset="utf-8" />
+        <title>Multiplayer Browser Game</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div class="flex-row">
+            <div id="content"></div>
+            <div id="chatContainer" class="chatContainer">
+                <div class="chatArea">
+                    <ul id="messages" class="messages"></ul>
+                </div>
+                <input id="inputMessage" class="inputMessage" placeholder="Type here..." type="text">
+            </div>
+        </div>
+        <script src="bundle.js" type="application/javascript"></script>
+    </body>
 </html>

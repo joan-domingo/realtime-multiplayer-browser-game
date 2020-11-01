@@ -5,6 +5,7 @@ import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
 import OnlinePlayer from "./players/OnlinePlayer";
 import { MapScene } from "./scenes/MapScene";
 import { EnterNameScene } from "./scenes/EnterNameScene";
+import { RoomClient } from "./RoomClient";
 
 const config: GameConfig = {
   type: Phaser.AUTO,
@@ -38,7 +39,33 @@ export const endpoint =
     ? "https://multiplayer-game-be.herokuapp.com/".replace(/^http/, "ws")
     : "ws://localhost:4000";
 
-// Backend (Colyseus) room
-// export let room: undefined | Room = undefined;
+export const roomClient = new RoomClient();
 
 export const onlinePlayers: OnlinePlayer[] = [];
+
+export const inputMessage = document.getElementById(
+  "inputMessage"
+) as HTMLInputElement;
+
+export const messagesUL: HTMLUListElement = document.getElementById(
+  "messages"
+) as HTMLUListElement;
+
+window.addEventListener("keydown", (event) => {
+  if (event.which === 13) {
+    sendMessage();
+  }
+  if (event.which === 32) {
+    if (document.activeElement === inputMessage) {
+      inputMessage.value = inputMessage.value + " ";
+    }
+  }
+});
+
+function sendMessage() {
+  let message = inputMessage.value;
+  if (message) {
+    inputMessage.value = "";
+    roomClient.getRoomInstance().send("message", message);
+  }
+}

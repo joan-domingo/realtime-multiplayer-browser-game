@@ -9,11 +9,11 @@
     "dev": "webpack-dev-server"
   },
   "dependencies": {
-    "@types/node": "^14.11.2",
     "colyseus.js": "^0.13.1",
     "phaser": "^3.24.1"
   },
   "devDependencies": {
+    "@types/node": "^14.11.2",
     "file-loader": "^6.1.0",
     "prettier": "^2.1.0",
     "ts-loader": "^8.0.3",

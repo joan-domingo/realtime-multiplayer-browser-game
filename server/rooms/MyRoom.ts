@@ -1,11 +1,20 @@
 import { Client, Room } from "colyseus";
-import { Players } from "./types";
+import { Players } from "../types";
 
 export class MyRoom extends Room {
+  // this room supports only 4 clients connected
+  // maxClients = 4;
   private players: Players = {};
 
+  constructor(options: any) {
+    super();
+    this.setState({
+      messages: [`Welcome to the most awesome game. Starting room...`],
+    });
+  }
+
   onCreate(options: { nickname: string }) {
-    console.debug("ON CREATE", options);
+    // console.debug("ON CREATE", options);
 
     this.onMessage("PLAYER_MOVED", (player, data) => {
       this.players[player.sessionId].x = data.x;
@@ -35,13 +44,23 @@ export class MyRoom extends Room {
       );
     });
 
+    this.onMessage("message", (player, message) => {
+      /*console.debug(
+        "Room received message from",
+        client.sessionId,
+        ":",
+        message
+      );*/
+      this.state.messages.push(`${options.nickname}: ${message}`);
+    });
+
     this.onMessage("*", (client, type) => {
-      console.debug("messageType not handled by the Room: " + type);
+      console.warn("messageType not handled by the Room: " + type);
     });
   }
 
   onJoin(player: Client, options: { nickname: string }) {
-    console.debug("ON JOIN", options);
+    // console.debug("ON JOIN", options);
 
     this.players[player.sessionId] = {
       sessionId: player.sessionId,
@@ -58,15 +77,20 @@ export class MyRoom extends Room {
         }),
       500
     );
+
     this.broadcast(
       "PLAYER_JOINED",
       { ...this.players[player.sessionId] },
       { except: player }
     );
+
+    this.state.messages.push(`${options.nickname} joined. Say hello!`);
   }
 
   onLeave(player: Client, consented: boolean) {
-    console.debug("ON LEAVE", player);
+    // console.debug("ON LEAVE", player);
+    const playerNickname = this.players[player.sessionId].nickname;
+    this.state.messages.push(`${playerNickname} left.`);
 
     this.broadcast("PLAYER_LEFT", {
       sessionId: player.sessionId,
@@ -76,6 +100,6 @@ export class MyRoom extends Room {
   }
 
   onDispose() {
-    console.debug("ON DISPOSE");
+    // console.debug("ON DISPOSE");
   }
 }
