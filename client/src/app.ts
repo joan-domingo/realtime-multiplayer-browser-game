@@ -29,6 +29,13 @@ const config: GameConfig = {
     // prevent pixel art from becoming blurre when scaled
     pixelArt: true,
   },
+  scale: {
+    mode: Phaser.Scale.FIT,
+    parent: "content",
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: 800,
+    height: 600,
+  },
   scene: [EnterNickNameScene, InitialLoadingScene, ErrorLoadingScene, MapScene],
   dom: {
     createContainer: true,
