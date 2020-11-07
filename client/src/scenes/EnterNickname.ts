@@ -62,6 +62,9 @@ export class EnterNickNameScene extends Scene {
     if (nickname && nickname.length > 0) {
       window.localStorage.setItem("nickname", nickname);
 
+      document.getElementById("inputForm").style.display = "none";
+      document.getElementById("loadingView").style.display = "block";
+
       new Client(endpoint)
         .joinOrCreate("Room1", { nickname })
         .then((room: Room) => {
