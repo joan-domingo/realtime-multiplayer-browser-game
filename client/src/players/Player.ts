@@ -1,42 +1,33 @@
 import Phaser from "phaser";
 import Sprite = Phaser.GameObjects.Sprite;
-import StaticTilemapLayer = Phaser.Tilemaps.StaticTilemapLayer;
 import CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
 import Body = Phaser.Physics.Arcade.Body;
 import Text = Phaser.GameObjects.Text;
 import { MapScene } from "../scenes/MapScene";
 import Key = Phaser.Input.Keyboard.Key;
+import Pointer = Phaser.Input.Pointer;
 
 export default class Player extends Sprite {
+  private speed = 50;
   // controls
   cursors: CursorKeys;
   keyA: Key;
   keyS: Key;
   keyD: Key;
   keyW: Key;
+  pointer: Pointer;
 
-  scene: MapScene;
+  private oldPosition: { x: number; y: number };
   body: Body;
-  oldPosition: { x: number; y: number };
-  speed: number;
-  playerNickname: Text;
-  map: string;
+  private playerNickname: Text;
 
-  constructor(config: {
-    scene: MapScene;
-    worldLayer: StaticTilemapLayer;
-    key: string;
-    x: number;
-    y: number;
-    nickname: string;
-  }) {
-    super(config.scene, config.x, config.y, config.key);
+  constructor(scene: MapScene) {
+    super(scene, 50, 100, scene.playerKey, `jedi-front-00.png`);
 
     this.scene.add.existing(this);
     this.scene.physics.world.enableBody(this);
-    this.scene.physics.add.collider(this, config.worldLayer);
-
-    this.setTexture(config.key, `jedi-front-00.png`).setScale(1 / 2, 1 / 2);
+    this.scene.physics.add.collider(this, scene.obstaclesLayer);
+    this.setScale(1 / 2, 1 / 2);
 
     // Register cursors for player movement
     this.cursors = this.scene.input.keyboard.createCursorKeys();
@@ -52,6 +43,7 @@ export default class Player extends Sprite {
     this.keyW = this.scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.W
     );
+    this.pointer = this.scene.input.activePointer;
 
     // Player Offset
     this.body.setOffset(0, 0);
@@ -62,59 +54,84 @@ export default class Player extends Sprite {
     // Set depth (z-index)
     this.setDepth(5);
 
-    // store previous position
-    this.oldPosition = undefined;
-
-    // Player speed
-    this.speed = 50;
-
     // Player nickname text
     this.playerNickname = this.scene.add.text(
       this.x - this.width * 1.4,
       this.y - this.height / 2,
-      config.nickname,
+      scene.playerNickname,
       {
         fontSize: 8,
         resolution: 10,
       }
     );
     this.playerNickname.setDepth(11);
+
+    Player.createAnimations(scene);
   }
 
   update(time: number, delta: number) {
     const prevVelocity = this.body.velocity.clone();
 
-    // Show player nickname above player
     this.showPlayerNickname();
 
     // Stop any previous movement from the last frame
-    this.body.setVelocity(0);
+    this.body.setVelocity(0, 0);
 
-    // Horizontal movement
+    // Keyboard
     if (this.cursors.left.isDown || this.keyA.isDown) {
-      this.body.setVelocityX(-this.speed);
+      this.goLeft();
     } else if (this.cursors.right.isDown || this.keyD.isDown) {
-      this.body.setVelocityX(this.speed);
+      this.goRight();
     }
 
-    // Vertical movement
     if (this.cursors.up.isDown || this.keyW.isDown) {
-      this.body.setVelocityY(-this.speed);
+      this.goDown();
     } else if (this.cursors.down.isDown || this.keyS.isDown) {
-      this.body.setVelocityY(this.speed);
+      this.goUp();
+    }
+
+    // Mouse
+    if (this.pointer.isDown) {
+      if (this.pointer.worldX < this.body.x) {
+        this.goLeft();
+      } else if (this.pointer.worldX > this.body.x + 16) {
+        this.goRight();
+      }
+
+      if (this.pointer.worldY < this.body.y) {
+        this.goDown();
+      } else if (this.pointer.worldY > this.body.y + 24) {
+        this.goUp();
+      }
     }
 
     // Normalize and scale the velocity so that player can't move faster along a diagonal
     this.body.velocity.normalize().scale(this.speed);
 
     // Update the animation last and give left/right animations precedence over up/down animations
-    if (this.cursors.left.isDown || this.keyA.isDown) {
+    if (
+      this.cursors.left.isDown ||
+      this.keyA.isDown ||
+      (this.pointer.isDown && this.pointer.worldX < this.body.x)
+    ) {
       this.anims.play("jedi-left", true);
-    } else if (this.cursors.right.isDown || this.keyD.isDown) {
+    } else if (
+      this.cursors.right.isDown ||
+      this.keyD.isDown ||
+      (this.pointer.isDown && this.pointer.worldX > this.body.x + 16)
+    ) {
       this.anims.play("jedi-right", true);
-    } else if (this.cursors.up.isDown || this.keyW.isDown) {
+    } else if (
+      this.cursors.up.isDown ||
+      this.keyW.isDown ||
+      (this.pointer.isDown && this.pointer.worldY < this.body.y)
+    ) {
       this.anims.play("jedi-back", true);
-    } else if (this.cursors.down.isDown || this.keyS.isDown) {
+    } else if (
+      this.cursors.down.isDown ||
+      this.keyS.isDown ||
+      (this.pointer.isDown && this.pointer.worldY > this.body.y + 24)
+    ) {
       this.anims.play("jedi-front", true);
     } else {
       this.anims.stop();
@@ -129,6 +146,22 @@ export default class Player extends Sprite {
       else if (prevVelocity.y > 0)
         this.setTexture("currentPlayer", "jedi-front-00.png");
     }
+  }
+
+  private goUp() {
+    this.body.setVelocityY(this.speed);
+  }
+
+  private goDown() {
+    this.body.setVelocityY(-this.speed);
+  }
+
+  private goRight() {
+    this.body.setVelocityX(this.speed);
+  }
+
+  private goLeft() {
+    this.body.setVelocityX(-this.speed);
   }
 
   showPlayerNickname() {
@@ -147,5 +180,58 @@ export default class Player extends Sprite {
       this.oldPosition = { x: this.x, y: this.y };
       return false;
     }
+  }
+
+  private static createAnimations(scene: MapScene) {
+    // Create the player's walking animations from the texture currentPlayer. These are stored in the global
+    // animation manager so any sprite can access them.
+    scene.anims.create({
+      key: "jedi-front",
+      frames: scene.anims.generateFrameNames(scene.playerKey, {
+        start: 0,
+        end: 3,
+        zeroPad: 2,
+        prefix: "jedi-front-",
+        suffix: ".png",
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    scene.anims.create({
+      key: "jedi-back",
+      frames: scene.anims.generateFrameNames(scene.playerKey, {
+        prefix: "jedi-back-",
+        start: 0,
+        end: 3,
+        zeroPad: 2,
+        suffix: ".png",
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    scene.anims.create({
+      key: "jedi-right",
+      frames: scene.anims.generateFrameNames(scene.playerKey, {
+        prefix: "jedi-right-",
+        start: 0,
+        end: 3,
+        zeroPad: 2,
+        suffix: ".png",
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    scene.anims.create({
+      key: "jedi-left",
+      frames: scene.anims.generateFrameNames(scene.playerKey, {
+        prefix: "jedi-left-",
+        start: 0,
+        end: 3,
+        zeroPad: 2,
+        suffix: ".png",
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
   }
 }

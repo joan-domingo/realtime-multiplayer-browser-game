@@ -18,10 +18,10 @@ export class MapScene extends Scene {
   private tileMapKey: string;
   private tileSetKey: string;
   // player
-  private playerKey: string;
+  playerKey: string;
   private playerTextureUrl: string;
   private playerAtlastUrl: string;
-  private playerNickname: string;
+  playerNickname: string;
   // online player
   private onlinePlayerKey: string;
   private onlinePlayerTextureUrl: string;
@@ -95,10 +95,7 @@ export class MapScene extends Scene {
     this.createMap();
 
     // create player
-    this.createPlayer();
-
-    // create player animations
-    this.createAnimations();
+    this.player = new Player(this);
 
     // create online player animations
     this.createOnlinePlayerAnimations();
@@ -178,59 +175,6 @@ export class MapScene extends Scene {
     return tilesetKey.slice(tilesetKey.lastIndexOf("/") + 1);
   }
 
-  private createAnimations() {
-    // Create the player's walking animations from the texture currentPlayer. These are stored in the global
-    // animation manager so any sprite can access them.
-    this.anims.create({
-      key: "jedi-front",
-      frames: this.anims.generateFrameNames(this.playerKey, {
-        start: 0,
-        end: 3,
-        zeroPad: 2,
-        prefix: "jedi-front-",
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: "jedi-back",
-      frames: this.anims.generateFrameNames(this.playerKey, {
-        prefix: "jedi-back-",
-        start: 0,
-        end: 3,
-        zeroPad: 2,
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: "jedi-right",
-      frames: this.anims.generateFrameNames(this.playerKey, {
-        prefix: "jedi-right-",
-        start: 0,
-        end: 3,
-        zeroPad: 2,
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: "jedi-left",
-      frames: this.anims.generateFrameNames(this.playerKey, {
-        prefix: "jedi-left-",
-        start: 0,
-        end: 3,
-        zeroPad: 2,
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-  }
-
   private createOnlinePlayerAnimations() {
     // onlinePlayer animations
     this.anims.create({
@@ -283,18 +227,6 @@ export class MapScene extends Scene {
     });
   }
 
-  private createPlayer() {
-    // our player sprite
-    this.player = new Player({
-      scene: this,
-      worldLayer: this.obstaclesLayer,
-      key: this.playerKey,
-      x: 50,
-      y: 100,
-      nickname: this.playerNickname,
-    });
-  }
-
   private updateCamera() {
     // limit camera to map
     this.cameras.main.setBounds(
@@ -304,7 +236,7 @@ export class MapScene extends Scene {
       this.map.heightInPixels
     );
     this.cameras.main.setZoom(3);
-    this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+    this.cameras.main.startFollow(this.player, true);
   }
 
   update(time: number, delta: number) {

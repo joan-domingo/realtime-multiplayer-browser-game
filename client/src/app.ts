@@ -17,9 +17,6 @@ const config: GameConfig = {
   physics: {
     default: "arcade",
     arcade: {
-      gravity: {
-        y: 0,
-      },
       debug: process.env.NODE_ENV === "development", // set to true to view zones
     },
   },
