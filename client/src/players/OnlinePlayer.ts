@@ -48,11 +48,9 @@ export default class OnlinePlayer extends Sprite {
   }
 
   isWalking(position: string, x: number, y: number) {
-    // Player
     this.anims.play(`stormtrooper-${position}`, true);
     this.setPosition(x, y);
 
-    // PlayerId
     this.playerNickname.x = this.x - this.playerNickname.width / 2;
     this.playerNickname.y = this.y - this.height / 2;
   }

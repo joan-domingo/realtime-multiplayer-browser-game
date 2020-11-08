@@ -157,7 +157,7 @@ export class MapScene extends Scene {
 
   private updateRoom() {
     this.room.onMessage(RoomEvents.CURRENT_PLAYERS, (data) => {
-      // console.debug("CURRENT_PLAYERS");
+      // console.debug(RoomEvents.CURRENT_PLAYERS, data);
       Object.keys(data.players).forEach((playerId) => {
         const player: ServerPlayer = data.players[playerId];
 
@@ -167,7 +167,7 @@ export class MapScene extends Scene {
       });
     });
     this.room.onMessage(RoomEvents.PLAYER_JOINED, (data: ServerPlayer) => {
-      // console.debug("PLAYER_JOINED", data.nickname);
+      // console.debug(RoomEvents.PLAYER_JOINED, data);
       if (!this.onlinePlayers[data.sessionId]) {
         this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
       }
@@ -193,7 +193,6 @@ export class MapScene extends Scene {
     this.room.onMessage(
       RoomEvents.PLAYER_MOVEMENT_ENDED,
       (data: ServerPlayer) => {
-        // If player isn't registered in this scene (map changing bug..)
         if (!this.onlinePlayers[data.sessionId]) {
           this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
         }

@@ -1,5 +1,5 @@
 import { Client, Room } from "colyseus";
-import { Players } from "../types";
+import { Player, Players } from "../types";
 
 export class MyRoom extends Room {
   // this room supports only 4 clients connected
@@ -26,7 +26,7 @@ export class MyRoom extends Room {
           ...this.players[player.sessionId],
           position: data.position,
           nickname: options.nickname,
-        },
+        } as Player,
         { except: player }
       );
     });
@@ -39,7 +39,7 @@ export class MyRoom extends Room {
           map: this.players[player.sessionId].map,
           position: data.position,
           nickname: options.nickname,
-        },
+        } as Player,
         { except: player }
       );
     });
@@ -67,9 +67,10 @@ export class MyRoom extends Room {
     this.players[player.sessionId] = {
       sessionId: player.sessionId,
       map: "town",
-      x: 352,
-      y: 1216,
+      x: 50,
+      y: 100,
       nickname: options.nickname,
+      position: "front",
     };
 
     setTimeout(
