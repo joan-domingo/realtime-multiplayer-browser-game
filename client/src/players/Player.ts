@@ -46,9 +46,6 @@ export default class Player extends Sprite {
     );
     this.pointer = this.scene.input.activePointer;
 
-    // Player Offset
-    this.body.setOffset(0, 0);
-
     // Player can't go out of the world
     this.body.setCollideWorldBounds(true);
 
@@ -56,20 +53,17 @@ export default class Player extends Sprite {
     this.setDepth(5);
 
     // Player nickname text
-    this.playerNickname = this.scene.add.text(
-      this.x - this.width * 1.4,
-      this.y - this.height / 2,
-      scene.playerNickname,
-      {
-        fontSize: 8,
-        resolution: 10,
-      }
-    );
+    this.playerNickname = this.scene.add.text(0, 0, scene.playerNickname, {
+      fontSize: 8,
+      resolution: 10,
+    });
     this.playerNickname.setDepth(11);
 
     Player.createAnimations(scene);
 
     this.playerKey = scene.playerKey;
+
+    this.setOrigin(0, 0);
   }
 
   update(time: number, delta: number) {
@@ -185,8 +179,8 @@ export default class Player extends Sprite {
   }
 
   showPlayerNickname() {
-    this.playerNickname.x = this.x - this.playerNickname.width / 2;
-    this.playerNickname.y = this.y - this.height / 2;
+    this.playerNickname.x = this.x;
+    this.playerNickname.y = this.y - this.height / 4;
   }
 
   private static createAnimations(scene: MapScene) {

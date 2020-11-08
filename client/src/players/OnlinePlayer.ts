@@ -24,35 +24,35 @@ export default class OnlinePlayer extends Sprite {
     this.scene.physics.add.collider(this, scene.obstaclesLayer);
     this.setScale(1 / 2, 1 / 2);
 
-    // Player Offset
-    this.body.setOffset(0, 0);
-
     // Player can't go out of the world
     this.body.setCollideWorldBounds(true);
 
     // Player nickname text
-    this.playerNickname = this.scene.add.text(
-      this.x - this.width * 1.4,
-      this.y - this.height / 2,
-      player.nickname,
-      {
-        fontSize: 8,
-        resolution: 10,
-      }
-    );
+    this.playerNickname = this.scene.add.text(0, 0, player.nickname, {
+      fontSize: 8,
+      resolution: 10,
+    });
+    this.showOnlinePlayerNickname();
+
     this.playerNickname.setDepth(11);
 
     OnlinePlayer.createAnimations(scene);
 
     this.onlinePlayerKey = scene.onlinePlayerKey;
+
+    this.setOrigin(0, 0);
+  }
+
+  showOnlinePlayerNickname() {
+    this.playerNickname.x = this.x;
+    this.playerNickname.y = this.y - this.height / 4;
   }
 
   isWalking(position: string, x: number, y: number) {
     this.anims.play(`stormtrooper-${position}`, true);
     this.setPosition(x, y);
 
-    this.playerNickname.x = this.x - this.playerNickname.width / 2;
-    this.playerNickname.y = this.y - this.height / 2;
+    this.showOnlinePlayerNickname();
   }
 
   stopWalking(position: string) {
