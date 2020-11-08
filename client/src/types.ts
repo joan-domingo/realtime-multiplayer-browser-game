@@ -1,27 +1,22 @@
-import GameObject = Phaser.GameObjects.GameObject;
 import BaseSound = Phaser.Sound.BaseSound;
 
-export interface WorldObject extends GameObject {
-  x: number;
-  y: number;
-  height: number;
-  width: number;
-  properties: WorldObjectProperties[];
-}
-export interface DoorsObject extends GameObject {
-  x: number;
-  y: number;
-  height: number;
-  width: number;
-}
-
-export interface WorldObjectProperties {
-  name: string;
-  type: string;
-  value: string;
+export enum RoomEvents {
+  PLAYER_MOVEMENT_ENDED = "PLAYER_MOVEMENT_ENDED",
+  PLAYER_MOVED = "PLAYER_MOVED",
+  CURRENT_PLAYERS = "CURRENT_PLAYERS",
+  PLAYER_JOINED = "PLAYER_JOINED",
+  PLAYER_LEFT = "PLAYER_LEFT",
 }
 
 export interface SpecialEffects {
   laserPlayer: BaseSound;
   laserEnemy: BaseSound;
+}
+
+export interface ServerPlayer {
+  x: number;
+  y: number;
+  sessionId: string;
+  nickname: string;
+  position: string;
 }

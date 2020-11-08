@@ -1,14 +1,12 @@
 import { Scene } from "phaser";
 import Tilemap = Phaser.Tilemaps.Tilemap;
-import CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
 import StaticTilemapLayer = Phaser.Tilemaps.StaticTilemapLayer;
-import { onlinePlayers, roomClient } from "../app";
+import { roomClient } from "../app";
 import { Room } from "colyseus.js";
 import OnlinePlayer from "../players/OnlinePlayer";
 import Player from "../players/Player";
-import { SpecialEffects } from "../types";
+import { RoomEvents, ServerPlayer, SpecialEffects } from "../types";
 import Group = Phaser.GameObjects.Group;
-import PlayerLaser from "../players/PlayerLaser";
 
 export class MapScene extends Scene {
   // room
@@ -16,23 +14,20 @@ export class MapScene extends Scene {
   // map
   private tileMapKey: string;
   private tileSetKey: string;
+  private map: Tilemap;
+  obstaclesLayer: StaticTilemapLayer;
   // player
   playerKey: string;
-  private playerTextureUrl: string;
-  private playerAtlastUrl: string;
   playerNickname: string;
-  // online player
-  private onlinePlayerKey: string;
-  private onlinePlayerTextureUrl: string;
-  private onlinePlayerAtlastUrl: string;
+  private player: Player;
+  // Online players
+  onlinePlayerKey: string;
+  private onlinePlayers: { [sessionId: string]: OnlinePlayer } = {};
   // controls
-
-  map: Tilemap;
-  player: Player;
-  obstaclesLayer: StaticTilemapLayer;
-  sfx: SpecialEffects;
-  playerLasers: Group;
-  enemyLasers: Group;
+  // Laser
+  private sfx: SpecialEffects;
+  private playerLasers: Group;
+  private enemyLasers: Group;
   private playerShootDelay: number;
   private playerShootTick: number;
 
@@ -50,14 +45,10 @@ export class MapScene extends Scene {
 
     // player
     this.playerKey = "currentPlayer";
-    this.playerTextureUrl = "assets/atlas/sprite_jedi.png";
-    this.playerAtlastUrl = "assets/atlas/sprite_jedi.json";
     this.playerNickname = data.nickname;
 
     // Online player
-    this.onlinePlayerKey = "players";
-    this.onlinePlayerTextureUrl = "assets/atlas/sprite_stormtrooper.png";
-    this.onlinePlayerAtlastUrl = "assets/atlas/sprite_stormtrooper.json";
+    this.onlinePlayerKey = "onlinePlayer";
   }
 
   preload() {
@@ -67,15 +58,15 @@ export class MapScene extends Scene {
     // Load player atlas
     this.load.atlas(
       this.playerKey,
-      this.playerTextureUrl,
-      this.playerAtlastUrl
+      "assets/atlas/sprite_jedi.png",
+      "assets/atlas/sprite_jedi.json"
     );
 
     // Load online player atlas
     this.load.atlas(
       this.onlinePlayerKey,
-      this.onlinePlayerTextureUrl,
-      this.onlinePlayerAtlastUrl
+      "assets/atlas/sprite_stormtrooper.png",
+      "assets/atlas/sprite_stormtrooper.json"
     );
 
     // Load player laser
@@ -90,9 +81,6 @@ export class MapScene extends Scene {
     // create player
     this.player = new Player(this);
 
-    // create online player animations
-    this.createOnlinePlayerAnimations();
-
     // update camera
     this.updateCamera();
 
@@ -103,19 +91,7 @@ export class MapScene extends Scene {
     this.updateRoom();
 
     // Special effects
-    this.sfx = {
-      laserPlayer: this.sound.add("sndLaserPlayer"),
-      laserEnemy: this.sound.add("sndLaserPlayer"),
-    };
-
-    this.enemyLasers = this.add.group();
-    this.playerLasers = this.add.group();
-
-    this.updateLasers();
-    this.updatePlayerShooting();
-
-    this.playerShootDelay = 30;
-    this.playerShootTick = 30;
+    this.createLasers();
 
     // Create worldLayer collision graphic above the player, but below the help text
     if (process.env.NODE_ENV === "development") {
@@ -162,58 +138,6 @@ export class MapScene extends Scene {
     return tilesetKey.slice(tilesetKey.lastIndexOf("/") + 1);
   }
 
-  private createOnlinePlayerAnimations() {
-    // onlinePlayer animations
-    this.anims.create({
-      key: "stormtrooper-front",
-      frames: this.anims.generateFrameNames(this.onlinePlayerKey, {
-        start: 0,
-        end: 3,
-        zeroPad: 2,
-        prefix: "stormtrooper-front-",
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: "stormtrooper-back",
-      frames: this.anims.generateFrameNames(this.onlinePlayerKey, {
-        prefix: "stormtrooper-back-",
-        start: 0,
-        end: 3,
-        zeroPad: 2,
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: "stormtrooper-right",
-      frames: this.anims.generateFrameNames(this.onlinePlayerKey, {
-        prefix: "stormtrooper-right-",
-        start: 0,
-        end: 3,
-        zeroPad: 2,
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: "stormtrooper-left",
-      frames: this.anims.generateFrameNames(this.onlinePlayerKey, {
-        prefix: "stormtrooper-left-",
-        start: 0,
-        end: 3,
-        zeroPad: 2,
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-  }
-
   private updateCamera() {
     // limit camera to map
     this.cameras.main.setBounds(
@@ -232,72 +156,67 @@ export class MapScene extends Scene {
   }
 
   private updateRoom() {
-    this.room.onMessage("CURRENT_PLAYERS", (data) => {
+    this.room.onMessage(RoomEvents.CURRENT_PLAYERS, (data) => {
       // console.debug("CURRENT_PLAYERS");
       Object.keys(data.players).forEach((playerId) => {
-        let player = data.players[playerId];
+        const player: ServerPlayer = data.players[playerId];
 
         if (playerId !== this.room.sessionId) {
-          onlinePlayers[player.sessionId] = new OnlinePlayer({
-            scene: this,
-            playerId: player.sessionId,
-            key: player.sessionId,
-            x: player.x,
-            y: player.y,
-            nickname: player.nickname,
-          });
+          this.onlinePlayers[player.sessionId] = new OnlinePlayer(this, player);
         }
       });
     });
-    this.room.onMessage("PLAYER_JOINED", (data) => {
+    this.room.onMessage(RoomEvents.PLAYER_JOINED, (data: ServerPlayer) => {
       // console.debug("PLAYER_JOINED", data.nickname);
-      if (!onlinePlayers[data.sessionId]) {
-        onlinePlayers[data.sessionId] = new OnlinePlayer({
-          scene: this,
-          playerId: data.sessionId,
-          key: data.sessionId,
-          x: data.x,
-          y: data.y,
-          nickname: data.nickname,
-        });
+      if (!this.onlinePlayers[data.sessionId]) {
+        this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
       }
     });
-    this.room.onMessage("PLAYER_LEFT", (data) => {
+    this.room.onMessage(RoomEvents.PLAYER_LEFT, (data) => {
       // console.debug("PLAYER_LEFT");
-      if (onlinePlayers[data.sessionId]) {
-        onlinePlayers[data.sessionId].destroy();
-        delete onlinePlayers[data.sessionId];
+      if (this.onlinePlayers[data.sessionId]) {
+        this.onlinePlayers[data.sessionId].destroy();
+        delete this.onlinePlayers[data.sessionId];
       }
     });
-    this.room.onMessage("PLAYER_MOVED", (data) => {
-      if (!onlinePlayers[data.sessionId].scene) {
-        onlinePlayers[data.sessionId] = new OnlinePlayer({
-          scene: this,
-          playerId: data.sessionId,
-          key: data.sessionId,
-          x: data.x,
-          y: data.y,
-          nickname: data.nickname,
-        });
+    this.room.onMessage(RoomEvents.PLAYER_MOVED, (data: ServerPlayer) => {
+      if (!this.onlinePlayers[data.sessionId]) {
+        this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
       }
       // Start animation and set sprite position
-      onlinePlayers[data.sessionId].isWalking(data.position, data.x, data.y);
+      this.onlinePlayers[data.sessionId].isWalking(
+        data.position,
+        data.x,
+        data.y
+      );
     });
-    this.room.onMessage("PLAYER_MOVEMENT_ENDED", (data) => {
-      // If player isn't registered in this scene (map changing bug..)
-      if (!onlinePlayers[data.sessionId].scene) {
-        onlinePlayers[data.sessionId] = new OnlinePlayer({
-          scene: this,
-          playerId: data.sessionId,
-          key: data.sessionId,
-          x: data.x,
-          y: data.y,
-          nickname: data.nickname,
-        });
+    this.room.onMessage(
+      RoomEvents.PLAYER_MOVEMENT_ENDED,
+      (data: ServerPlayer) => {
+        // If player isn't registered in this scene (map changing bug..)
+        if (!this.onlinePlayers[data.sessionId]) {
+          this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
+        }
+        // Stop animation & set sprite texture
+        this.onlinePlayers[data.sessionId].stopWalking(data.position);
       }
-      // Stop animation & set sprite texture
-      onlinePlayers[data.sessionId].stopWalking(data.position);
-    });
+    );
+  }
+
+  private createLasers() {
+    this.sfx = {
+      laserPlayer: this.sound.add("sndLaserPlayer"),
+      laserEnemy: this.sound.add("sndLaserPlayer"),
+    };
+
+    this.enemyLasers = this.add.group();
+    this.playerLasers = this.add.group();
+
+    this.updateLasers();
+    this.updatePlayerShooting();
+
+    this.playerShootDelay = 30;
+    this.playerShootTick = 30;
   }
 
   private updateLasers() {

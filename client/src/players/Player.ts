@@ -6,20 +6,21 @@ import Text = Phaser.GameObjects.Text;
 import { MapScene } from "../scenes/MapScene";
 import Key = Phaser.Input.Keyboard.Key;
 import Pointer = Phaser.Input.Pointer;
+import { RoomEvents } from "../types";
 
 export default class Player extends Sprite {
   private speed = 50;
-  // controls
-  cursors: CursorKeys;
-  keyA: Key;
-  keyS: Key;
-  keyD: Key;
-  keyW: Key;
-  pointer: Pointer;
-
-  private oldPosition: { x: number; y: number };
   body: Body;
+  // controls
+  private cursors: CursorKeys;
+  private keyA: Key;
+  private keyS: Key;
+  private keyD: Key;
+  private keyW: Key;
+  private pointer: Pointer;
+  // player
   private playerNickname: Text;
+  private playerKey: string;
 
   constructor(scene: MapScene) {
     super(scene, 50, 100, scene.playerKey, `jedi-front-00.png`);
@@ -67,6 +68,8 @@ export default class Player extends Sprite {
     this.playerNickname.setDepth(11);
 
     Player.createAnimations(scene);
+
+    this.playerKey = scene.playerKey;
   }
 
   update(time: number, delta: number) {
@@ -138,16 +141,16 @@ export default class Player extends Sprite {
 
       // If we were moving, pick and idle frame to use
       if (prevVelocity.x < 0) {
-        this.setTexture("currentPlayer", "jedi-left-00.png");
+        this.setTexture(this.playerKey, "jedi-left-00.png");
         this.sendPlayerStoppedEvent("left");
       } else if (prevVelocity.x > 0) {
-        this.setTexture("currentPlayer", "jedi-right-00.png");
+        this.setTexture(this.playerKey, "jedi-right-00.png");
         this.sendPlayerStoppedEvent("right");
       } else if (prevVelocity.y < 0) {
-        this.setTexture("currentPlayer", "jedi-back-00.png");
+        this.setTexture(this.playerKey, "jedi-back-00.png");
         this.sendPlayerStoppedEvent("back");
       } else if (prevVelocity.y > 0) {
-        this.setTexture("currentPlayer", "jedi-front-00.png");
+        this.setTexture(this.playerKey, "jedi-front-00.png");
         this.sendPlayerStoppedEvent("front");
       }
     }
@@ -174,7 +177,7 @@ export default class Player extends Sprite {
   }
 
   sendPlayerMovedEvent(position: string) {
-    (this.scene as MapScene).room.send("PLAYER_MOVED", {
+    (this.scene as MapScene).room.send(RoomEvents.PLAYER_MOVED, {
       position: position,
       x: this.body.x,
       y: this.body.y,
@@ -186,75 +189,32 @@ export default class Player extends Sprite {
     this.playerNickname.y = this.y - this.height / 2;
   }
 
-  isMoved() {
-    if (
-      this.oldPosition &&
-      (this.oldPosition.x !== this.x || this.oldPosition.y !== this.y)
-    ) {
-      this.oldPosition = { x: this.x, y: this.y };
-      return true;
-    } else {
-      this.oldPosition = { x: this.x, y: this.y };
-      return false;
-    }
-  }
-
   private static createAnimations(scene: MapScene) {
-    // Create the player's walking animations from the texture currentPlayer. These are stored in the global
-    // animation manager so any sprite can access them.
-    scene.anims.create({
-      key: "jedi-front",
-      frames: scene.anims.generateFrameNames(scene.playerKey, {
-        start: 0,
-        end: 3,
-        zeroPad: 2,
-        prefix: "jedi-front-",
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    scene.anims.create({
-      key: "jedi-back",
-      frames: scene.anims.generateFrameNames(scene.playerKey, {
-        prefix: "jedi-back-",
-        start: 0,
-        end: 3,
-        zeroPad: 2,
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    scene.anims.create({
-      key: "jedi-right",
-      frames: scene.anims.generateFrameNames(scene.playerKey, {
-        prefix: "jedi-right-",
-        start: 0,
-        end: 3,
-        zeroPad: 2,
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    scene.anims.create({
-      key: "jedi-left",
-      frames: scene.anims.generateFrameNames(scene.playerKey, {
-        prefix: "jedi-left-",
-        start: 0,
-        end: 3,
-        zeroPad: 2,
-        suffix: ".png",
-      }),
-      frameRate: 10,
-      repeat: -1,
+    // Create the player's walking animations from the texture currentPlayer.
+    ["front", "back", "right", "left"].forEach((position) => {
+      scene.anims.create({
+        key: `jedi-${position}`,
+        frames: scene.anims.generateFrameNames(scene.playerKey, {
+          start: 0,
+          end: 3,
+          zeroPad: 2,
+          prefix: `jedi-${position}-`,
+          suffix: ".png",
+        }),
+        frameRate: 10,
+        repeat: -1,
+      });
     });
   }
 
   private sendPlayerStoppedEvent(position: string) {
-    (this.scene as MapScene).room.send("PLAYER_MOVEMENT_ENDED", {
+    (this.scene as MapScene).room.send(RoomEvents.PLAYER_MOVEMENT_ENDED, {
       position: position,
     });
+  }
+
+  destroy() {
+    super.destroy();
+    this.playerNickname.destroy();
   }
 }

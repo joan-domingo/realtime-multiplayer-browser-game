@@ -2,7 +2,6 @@ import GameConfig = Phaser.Types.Core.GameConfig;
 import { Game } from "phaser";
 import { InitialLoadingScene } from "./scenes/InitialLoadingScene";
 import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
-import OnlinePlayer from "./players/OnlinePlayer";
 import { MapScene } from "./scenes/MapScene";
 import { RoomClient } from "./RoomClient";
 import { Chat } from "./Chat";
@@ -48,9 +47,6 @@ export const endpoint =
 
 // Room client
 export const roomClient = new RoomClient();
-
-// Online players
-export const onlinePlayers: OnlinePlayer[] = [];
 
 // Chat
 export const chat = new Chat(roomClient);
