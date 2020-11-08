@@ -82,9 +82,9 @@ export default class Player extends Sprite {
     }
 
     if (this.cursors.up.isDown || this.keyW.isDown) {
-      this.goDown();
+      this.goBack();
     } else if (this.cursors.down.isDown || this.keyS.isDown) {
-      this.goUp();
+      this.goFront();
     }
 
     // Mouse
@@ -96,9 +96,9 @@ export default class Player extends Sprite {
       }
 
       if (this.pointer.worldY < this.body.y) {
-        this.goDown();
+        this.goBack();
       } else if (this.pointer.worldY > this.body.y + 24) {
-        this.goUp();
+        this.goFront();
       }
     }
 
@@ -111,24 +111,28 @@ export default class Player extends Sprite {
       this.keyA.isDown ||
       (this.pointer.isDown && this.pointer.worldX < this.body.x)
     ) {
+      this.sendPlayerMovedEvent("left");
       this.anims.play("jedi-left", true);
     } else if (
       this.cursors.right.isDown ||
       this.keyD.isDown ||
       (this.pointer.isDown && this.pointer.worldX > this.body.x + 16)
     ) {
+      this.sendPlayerMovedEvent("right");
       this.anims.play("jedi-right", true);
     } else if (
       this.cursors.up.isDown ||
       this.keyW.isDown ||
       (this.pointer.isDown && this.pointer.worldY < this.body.y)
     ) {
+      this.sendPlayerMovedEvent("back");
       this.anims.play("jedi-back", true);
     } else if (
       this.cursors.down.isDown ||
       this.keyS.isDown ||
       (this.pointer.isDown && this.pointer.worldY > this.body.y + 24)
     ) {
+      this.sendPlayerMovedEvent("front");
       this.anims.play("jedi-front", true);
     } else {
       this.anims.stop();
@@ -150,24 +154,20 @@ export default class Player extends Sprite {
     }
   }
 
-  private goUp() {
+  private goFront() {
     this.body.setVelocityY(this.speed);
-    this.sendPlayerMovedEvent("front");
   }
 
-  private goDown() {
+  private goBack() {
     this.body.setVelocityY(-this.speed);
-    this.sendPlayerMovedEvent("back");
   }
 
   private goRight() {
     this.body.setVelocityX(this.speed);
-    this.sendPlayerMovedEvent("right");
   }
 
   private goLeft() {
     this.body.setVelocityX(-this.speed);
-    this.sendPlayerMovedEvent("left");
   }
 
   sendPlayerMovedEvent(position: string) {
