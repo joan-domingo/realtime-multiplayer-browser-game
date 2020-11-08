@@ -9,11 +9,10 @@ import Player from "../players/Player";
 import { SpecialEffects } from "../types";
 import Group = Phaser.GameObjects.Group;
 import PlayerLaser from "../players/PlayerLaser";
-import Key = Phaser.Input.Keyboard.Key;
 
 export class MapScene extends Scene {
   // room
-  private room: Room;
+  room: Room;
   // map
   private tileMapKey: string;
   private tileSetKey: string;
@@ -27,16 +26,10 @@ export class MapScene extends Scene {
   private onlinePlayerTextureUrl: string;
   private onlinePlayerAtlastUrl: string;
   // controls
-  cursors: CursorKeys;
-  keyA: Key;
-  keyS: Key;
-  keyD: Key;
-  keyW: Key;
 
   map: Tilemap;
   player: Player;
   obstaclesLayer: StaticTilemapLayer;
-  socketKey: boolean;
   sfx: SpecialEffects;
   playerLasers: Group;
   enemyLasers: Group;
@@ -104,16 +97,10 @@ export class MapScene extends Scene {
     this.updateCamera();
 
     // user input
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-    this.keyS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-    this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    //this.cursors = this.input.keyboard.createCursorKeys();
 
     // React to room changes
     this.updateRoom();
-
-    this.movementTimer();
 
     // Special effects
     this.sfx = {
@@ -242,82 +229,6 @@ export class MapScene extends Scene {
   update(time: number, delta: number) {
     // Loop the player update method
     this.player.update(time, delta);
-
-    // Horizontal movement
-    if (this.cursors.left.isDown || this.keyA.isDown) {
-      if (this.socketKey) {
-        if (this.player.isMoved()) {
-          this.room.send("PLAYER_MOVED", {
-            position: "left",
-            // @ts-ignore
-            x: this.player.x,
-            // @ts-ignore
-            y: this.player.y,
-          });
-        }
-        this.socketKey = false;
-      }
-    } else if (this.cursors.right.isDown || this.keyD.isDown) {
-      if (this.socketKey) {
-        if (this.player.isMoved()) {
-          this.room.send("PLAYER_MOVED", {
-            position: "right",
-            // @ts-ignore
-            x: this.player.x,
-            // @ts-ignore
-            y: this.player.y,
-          });
-        }
-        this.socketKey = false;
-      }
-    }
-
-    // Vertical movement
-    if (this.cursors.up.isDown || this.keyW.isDown) {
-      if (this.socketKey) {
-        if (this.player.isMoved()) {
-          this.room.send("PLAYER_MOVED", {
-            position: "back",
-            // @ts-ignore
-            x: this.player.x,
-            // @ts-ignore
-            y: this.player.y,
-          });
-        }
-        this.socketKey = false;
-      }
-    } else if (this.cursors.down.isDown || this.keyS.isDown) {
-      if (this.socketKey) {
-        if (this.player.isMoved()) {
-          this.room.send("PLAYER_MOVED", {
-            position: "front",
-            // @ts-ignore
-            x: this.player.x,
-            // @ts-ignore
-            y: this.player.y,
-          });
-        }
-        this.socketKey = false;
-      }
-    }
-
-    // Horizontal movement ended
-    if (Phaser.Input.Keyboard.JustUp(this.cursors.left || this.keyA) === true) {
-      this.room.send("PLAYER_MOVEMENT_ENDED", { position: "left" });
-    } else if (
-      Phaser.Input.Keyboard.JustUp(this.cursors.right || this.keyD) === true
-    ) {
-      this.room.send("PLAYER_MOVEMENT_ENDED", { position: "right" });
-    }
-
-    // Vertical movement ended
-    if (Phaser.Input.Keyboard.JustUp(this.cursors.up || this.keyW) === true) {
-      this.room.send("PLAYER_MOVEMENT_ENDED", { position: "back" });
-    } else if (
-      Phaser.Input.Keyboard.JustUp(this.cursors.down || this.keyS) === true
-    ) {
-      this.room.send("PLAYER_MOVEMENT_ENDED", { position: "front" });
-    }
   }
 
   private updateRoom() {
@@ -389,12 +300,6 @@ export class MapScene extends Scene {
     });
   }
 
-  movementTimer() {
-    setInterval(() => {
-      this.socketKey = true;
-    }, 50);
-  }
-
   private updateLasers() {
     this.time.addEvent({
       delay: 30,
@@ -419,7 +324,7 @@ export class MapScene extends Scene {
   }
 
   private updatePlayerShooting() {
-    const spaceKey = this.cursors.space;
+    /*const spaceKey = this.cursors.space;
     this.time.addEvent({
       delay: 0,
       callback: function () {
@@ -438,6 +343,6 @@ export class MapScene extends Scene {
       },
       callbackScope: this,
       loop: true,
-    });
+    });*/
   }
 }

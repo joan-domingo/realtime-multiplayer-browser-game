@@ -137,31 +137,48 @@ export default class Player extends Sprite {
       this.anims.stop();
 
       // If we were moving, pick and idle frame to use
-      if (prevVelocity.x < 0)
+      if (prevVelocity.x < 0) {
         this.setTexture("currentPlayer", "jedi-left-00.png");
-      else if (prevVelocity.x > 0)
+        this.sendPlayerStoppedEvent("left");
+      } else if (prevVelocity.x > 0) {
         this.setTexture("currentPlayer", "jedi-right-00.png");
-      else if (prevVelocity.y < 0)
+        this.sendPlayerStoppedEvent("right");
+      } else if (prevVelocity.y < 0) {
         this.setTexture("currentPlayer", "jedi-back-00.png");
-      else if (prevVelocity.y > 0)
+        this.sendPlayerStoppedEvent("back");
+      } else if (prevVelocity.y > 0) {
         this.setTexture("currentPlayer", "jedi-front-00.png");
+        this.sendPlayerStoppedEvent("front");
+      }
     }
   }
 
   private goUp() {
     this.body.setVelocityY(this.speed);
+    this.sendPlayerMovedEvent("front");
   }
 
   private goDown() {
     this.body.setVelocityY(-this.speed);
+    this.sendPlayerMovedEvent("back");
   }
 
   private goRight() {
     this.body.setVelocityX(this.speed);
+    this.sendPlayerMovedEvent("right");
   }
 
   private goLeft() {
     this.body.setVelocityX(-this.speed);
+    this.sendPlayerMovedEvent("left");
+  }
+
+  sendPlayerMovedEvent(position: string) {
+    (this.scene as MapScene).room.send("PLAYER_MOVED", {
+      position: position,
+      x: this.body.x,
+      y: this.body.y,
+    });
   }
 
   showPlayerNickname() {
@@ -232,6 +249,12 @@ export default class Player extends Sprite {
       }),
       frameRate: 10,
       repeat: -1,
+    });
+  }
+
+  private sendPlayerStoppedEvent(position: string) {
+    (this.scene as MapScene).room.send("PLAYER_MOVEMENT_ENDED", {
+      position: position,
     });
   }
 }
