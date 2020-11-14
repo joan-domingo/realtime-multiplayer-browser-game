@@ -25,7 +25,7 @@ export class EnterNickNameScene extends Scene {
       fontSize: "20px ",
     });
 
-    const element = this.add.dom(0, 300).createFromCache(this.nameFormKey);
+    const element = this.add.dom(400, 300).createFromCache(this.nameFormKey);
     const submitNickname = this.onSubmitNickname;
     const inputText = document.getElementById("nameField") as HTMLInputElement;
 
@@ -37,25 +37,21 @@ export class EnterNickNameScene extends Scene {
       }
     });
 
-    this.tweens.add({
-      targets: element,
-      x: 460,
-      duration: 2000,
-      ease: "Power3",
-      onStart: () => {
-        const savedNickname = window.localStorage.getItem("nickname");
-        if (savedNickname) {
-          inputText.value = savedNickname;
-        }
-        inputText.focus();
-      },
-    });
+    const savedNickname = window.localStorage.getItem("nickname");
+    if (savedNickname) {
+      inputText.value = savedNickname;
+    }
+    inputText.focus();
 
     this.input.keyboard.on("keyup", function (event: KeyboardEvent) {
       if (event.keyCode === 13) {
         submitNickname(inputText.value);
       }
     });
+
+    if (process.env.NODE_ENV === "development") {
+      submitNickname(inputText.value);
+    }
   }
 
   onSubmitNickname = (nickname: string) => {

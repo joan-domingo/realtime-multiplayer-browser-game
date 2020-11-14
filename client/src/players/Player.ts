@@ -31,6 +31,8 @@ export default class Player extends Sprite {
     this.setScale(1 / 2, 1 / 2);
 
     // Register cursors for player movement
+    this.setInteractive();
+    this.scene.input.setPollAlways();
     this.cursors = this.scene.input.keyboard.createCursorKeys();
     this.keyA = this.scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.A
