@@ -7,6 +7,7 @@ import OnlinePlayer from "../players/OnlinePlayer";
 import Player from "../players/Player";
 import { RoomEvents, ServerPlayer, SpecialEffects } from "../types";
 import Group = Phaser.GameObjects.Group;
+import GameObject = Phaser.GameObjects.GameObject;
 
 export class MapScene extends Scene {
   // room
@@ -40,8 +41,8 @@ export class MapScene extends Scene {
     this.room = roomClient.getRoomInstance();
 
     // map
-    this.tileMapKey = "/assets/tilemaps/test_map";
-    this.tileSetKey = "/assets/tilesets/tiles";
+    this.tileMapKey = "/assets/tilemaps/scifi";
+    this.tileSetKey = "/assets/tilesets/scifitiles-sheet";
 
     // player
     this.playerKey = "currentPlayer";
@@ -79,7 +80,11 @@ export class MapScene extends Scene {
     this.createMap();
 
     // create player
-    this.player = new Player(this);
+    const spawnPoint: GameObject = this.map.findObject(
+      "Objects",
+      (obj) => obj.name === "Spawn Point"
+    );
+    this.player = new Player(this, spawnPoint);
 
     // update camera
     this.updateCamera();
@@ -122,16 +127,11 @@ export class MapScene extends Scene {
     const tileSet = this.map.addTilesetImage(tileSetName, this.tileSetKey);
 
     // creating the layers
-    this.map.createStaticLayer("floor", tileSet, 0, 0);
-    this.obstaclesLayer = this.map.createStaticLayer("walls", tileSet, 0, 0);
-    const aboveLayer = this.map.createStaticLayer("top", tileSet, 0, 0);
+    this.map.createStaticLayer("Floor", tileSet, 0, 0);
+    this.obstaclesLayer = this.map.createStaticLayer("Walls", tileSet, 0, 0);
 
     // Create collision for obstacles layer
-    this.obstaclesLayer.setCollision([7, 10, 13, 14, 49, 50, 53, 54, 59, 60]);
-
-    // Layer hides player
-    this.obstaclesLayer.setDepth(10);
-    aboveLayer.setDepth(10);
+    this.obstaclesLayer.setCollision([5, 47]);
   }
 
   private static getDefaultTilesetName(tilesetKey: string): string {

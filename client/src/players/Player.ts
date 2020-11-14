@@ -22,13 +22,20 @@ export default class Player extends Sprite {
   private playerNickname: Text;
   private playerKey: string;
 
-  constructor(scene: MapScene) {
-    super(scene, 50, 100, scene.playerKey, `jedi-front-00.png`);
+  constructor(scene: MapScene, spawnPoint: any) {
+    super(
+      scene,
+      spawnPoint.x,
+      spawnPoint.y,
+      scene.playerKey,
+      `jedi-front-00.png`
+    );
 
     this.scene.add.existing(this);
     this.scene.physics.world.enableBody(this);
-    this.scene.physics.add.collider(this, scene.obstaclesLayer);
     this.setScale(1 / 2, 1 / 2);
+
+    this.scene.physics.add.collider(this, scene.obstaclesLayer);
 
     // Register cursors for player movement
     this.setInteractive();
@@ -52,7 +59,7 @@ export default class Player extends Sprite {
     this.body.setCollideWorldBounds(true);
 
     // Set depth (z-index)
-    this.setDepth(5);
+    this.setDepth(1);
 
     // Player nickname text
     this.playerNickname = this.scene.add.text(0, 0, scene.playerNickname, {
