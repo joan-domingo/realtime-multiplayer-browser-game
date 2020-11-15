@@ -5,9 +5,15 @@ import { roomClient } from "../app";
 import { Room } from "colyseus.js";
 import OnlinePlayer from "../sprites/OnlinePlayer";
 import Player from "../sprites/Player";
-import { RoomEvents, ServerPlayer, SpecialEffects } from "../types";
+import {
+  RoomEvents,
+  ServerLaser,
+  ServerPlayer,
+  SpecialEffects,
+} from "../types";
 import Group = Phaser.GameObjects.Group;
 import GameObject = Phaser.GameObjects.GameObject;
+import OnlineLaser from "../sprites/OnlineLaser";
 
 export class MapScene extends Scene {
   // room
@@ -21,13 +27,14 @@ export class MapScene extends Scene {
   playerKey: string;
   playerNickname: string;
   private player: Player;
-  // Online sprites
+  // Online players
   onlinePlayerKey: string;
   private onlinePlayers: { [sessionId: string]: OnlinePlayer } = {};
   enemies: Group;
   // Laser
   laserKey: string;
   sfx: SpecialEffects;
+  onlineLasers: Group;
 
   constructor() {
     super("MapScene");
@@ -87,6 +94,7 @@ export class MapScene extends Scene {
 
     // Online players
     this.enemies = this.add.group();
+    this.onlineLasers = this.add.group();
 
     // Special effects
     this.sfx = {
@@ -207,5 +215,13 @@ export class MapScene extends Scene {
         this.onlinePlayers[data.sessionId].stopWalking(data.position);
       }
     );
+    this.room.onMessage(RoomEvents.LASER_MOVED, (data: ServerLaser) => {
+      if (this.onlineLasers.getLength() > 0) {
+        this.onlineLasers.getChildren()[0].destroy(true);
+      }
+      this.onlineLasers.add(
+        new OnlineLaser(this, data.x, data.y, data.position)
+      );
+    });
   }
 }

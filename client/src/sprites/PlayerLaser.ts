@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import Sprite = Phaser.GameObjects.Sprite;
 import { MapScene } from "../scenes/MapScene";
+import OnlinePlayer from "./OnlinePlayer";
+import { RoomEvents } from "../types";
 
 export default class PlayerLaser extends Sprite {
   body: Phaser.Physics.Arcade.Body;
@@ -19,11 +21,12 @@ export default class PlayerLaser extends Sprite {
       this.destroy()
     );
 
-    this.scene.physics.add.collider(
-      this,
-      (this.scene as MapScene).enemies,
-      () => console.log("kill")
-    );
+    this.scene.physics.add.collider(this, scene.enemies, (laser, enemy) => {
+      laser.destroy();
+      // explosion
+      const sessionId = (enemy as OnlinePlayer).getSessionId();
+      scene.room.send(RoomEvents.PLAYER_DIED, { sessionId });
+    });
 
     switch (lastPosition) {
       case "back":
@@ -43,5 +46,13 @@ export default class PlayerLaser extends Sprite {
     }
 
     scene.sfx.laserPlayer.play();
+  }
+
+  update() {
+    (this.scene as MapScene).room.send(RoomEvents.LASER_MOVED, {
+      position: "xxx",
+      x: this.body.x,
+      y: this.body.y,
+    });
   }
 }

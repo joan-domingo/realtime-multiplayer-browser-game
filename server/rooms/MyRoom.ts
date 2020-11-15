@@ -1,5 +1,5 @@
 import { Client, Room } from "colyseus";
-import { Player, Players } from "../types";
+import { Player, PlayerLaser, Players } from "../types";
 
 export class MyRoom extends Room {
   // this room supports only 4 clients connected
@@ -9,7 +9,7 @@ export class MyRoom extends Room {
   constructor(options: any) {
     super();
     this.setState({
-      messages: [`Welcome to the most awesome game. Starting room...`],
+      messages: [`Welcome to the most awesome game ever. Starting room...`],
     });
   }
 
@@ -53,6 +53,28 @@ export class MyRoom extends Room {
       );*/
       this.state.messages.push(
         `${this.getPlayerNickname(player.sessionId)}: ${message}`
+      );
+    });
+
+    this.onMessage(
+      "LASER_MOVED",
+      (player, message: { position: string; x: number; y: number }) => {
+        this.broadcast(
+          "LASER_MOVED",
+          {
+            sessionId: player.sessionId,
+            position: message.position,
+            x: message.x,
+            y: message.y,
+          } as PlayerLaser,
+          { except: player }
+        );
+      }
+    );
+
+    this.onMessage("PLAYER_DIED", (_player, message: { sessionId: string }) => {
+      this.state.messages.push(
+        `${this.getPlayerNickname(message.sessionId)}: DEAD!!`
       );
     });
 

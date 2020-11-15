@@ -9,6 +9,7 @@ export default class OnlinePlayer extends Sprite {
   body: Body;
   private playerNickname: Text;
   private readonly onlinePlayerKey: string;
+  private readonly sessionId: string;
 
   constructor(scene: MapScene, player: ServerPlayer) {
     super(
@@ -37,6 +38,8 @@ export default class OnlinePlayer extends Sprite {
     this.onlinePlayerKey = scene.onlinePlayerKey;
 
     this.setOrigin(0, 0);
+
+    this.sessionId = player.sessionId;
   }
 
   showOnlinePlayerNickname() {
@@ -77,5 +80,9 @@ export default class OnlinePlayer extends Sprite {
   destroy() {
     super.destroy();
     this.playerNickname.destroy();
+  }
+
+  getSessionId(): string {
+    return this.sessionId;
   }
 }

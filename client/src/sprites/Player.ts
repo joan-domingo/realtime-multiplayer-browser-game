@@ -108,6 +108,11 @@ export default class Player extends Sprite {
         )
       );
     }
+
+    for (let i = 0; i < this.lasers.getChildren().length; i++) {
+      const laser = this.lasers.getChildren()[i] as PlayerLaser;
+      laser.update();
+    }
   }
 
   private updatePlayerPosition() {

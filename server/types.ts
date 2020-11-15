@@ -10,3 +10,10 @@ export interface Player {
 export interface Players {
   [key: string]: Player;
 }
+
+export interface PlayerLaser {
+  x: number;
+  y: number;
+  sessionId: string;
+  position: string;
+}
