@@ -7,6 +7,8 @@ import { MapScene } from "../scenes/MapScene";
 import Key = Phaser.Input.Keyboard.Key;
 import Pointer = Phaser.Input.Pointer;
 import { RoomEvents } from "../types";
+import Group = Phaser.GameObjects.Group;
+import PlayerLaser from "./PlayerLaser";
 
 export default class Player extends Sprite {
   private speed = 50;
@@ -17,10 +19,15 @@ export default class Player extends Sprite {
   private keyS: Key;
   private keyD: Key;
   private keyW: Key;
+  private keySpace: Key;
   private pointer: Pointer;
   // player
   private playerNickname: Text;
   private playerKey: string;
+  private lastPosition: "back" | "front" | "left" | "right" = "front";
+  // Lasers
+  private lasers: Group;
+  private nextFire = 0;
 
   constructor(scene: MapScene, spawnPoint: any) {
     super(
@@ -35,10 +42,11 @@ export default class Player extends Sprite {
     this.scene.physics.world.enableBody(this);
     this.setScale(1 / 2, 1 / 2);
 
+    this.setInteractive();
+    this.body.setCollideWorldBounds(true);
     this.scene.physics.add.collider(this, scene.obstaclesLayer);
 
     // Register cursors for player movement
-    this.setInteractive();
     this.scene.input.setPollAlways();
     this.cursors = this.scene.input.keyboard.createCursorKeys();
     this.keyA = this.scene.input.keyboard.addKey(
@@ -53,10 +61,10 @@ export default class Player extends Sprite {
     this.keyW = this.scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.W
     );
+    this.keySpace = this.scene.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SPACE
+    );
     this.pointer = this.scene.input.activePointer;
-
-    // Player can't go out of the world
-    this.body.setCollideWorldBounds(true);
 
     // Set depth (z-index)
     this.setDepth(1);
@@ -73,13 +81,37 @@ export default class Player extends Sprite {
     this.playerKey = scene.playerKey;
 
     this.setOrigin(0, 0);
+
+    this.lasers = this.scene.add.group();
   }
 
   update(time: number, delta: number) {
-    const prevVelocity = this.body.velocity.clone();
-
     this.showPlayerNickname();
 
+    this.updatePlayerPosition();
+
+    this.updatePlayerLaser();
+  }
+
+  private updatePlayerLaser() {
+    const fireRate = 200;
+    const timeNow = this.scene.time.now;
+
+    if (this.keySpace.isDown && timeNow > this.nextFire) {
+      this.nextFire = timeNow + fireRate;
+      this.lasers.add(
+        new PlayerLaser(
+          this.scene as MapScene,
+          this.x,
+          this.y,
+          this.lastPosition
+        )
+      );
+    }
+  }
+
+  private updatePlayerPosition() {
+    const prevVelocity = this.body.velocity.clone();
     // Stop any previous movement from the last frame
     this.body.setVelocity(0, 0);
 
@@ -179,7 +211,8 @@ export default class Player extends Sprite {
     this.body.setVelocityX(-this.speed);
   }
 
-  sendPlayerMovedEvent(position: string) {
+  sendPlayerMovedEvent(position: "back" | "front" | "left" | "right") {
+    this.lastPosition = position;
     (this.scene as MapScene).room.send(RoomEvents.PLAYER_MOVED, {
       position: position,
       x: this.body.x,

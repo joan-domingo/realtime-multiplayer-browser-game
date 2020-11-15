@@ -3,8 +3,8 @@ import Tilemap = Phaser.Tilemaps.Tilemap;
 import StaticTilemapLayer = Phaser.Tilemaps.StaticTilemapLayer;
 import { roomClient } from "../app";
 import { Room } from "colyseus.js";
-import OnlinePlayer from "../players/OnlinePlayer";
-import Player from "../players/Player";
+import OnlinePlayer from "../sprites/OnlinePlayer";
+import Player from "../sprites/Player";
 import { RoomEvents, ServerPlayer, SpecialEffects } from "../types";
 import Group = Phaser.GameObjects.Group;
 import GameObject = Phaser.GameObjects.GameObject;
@@ -21,16 +21,12 @@ export class MapScene extends Scene {
   playerKey: string;
   playerNickname: string;
   private player: Player;
-  // Online players
+  // Online sprites
   onlinePlayerKey: string;
   private onlinePlayers: { [sessionId: string]: OnlinePlayer } = {};
-  // controls
   // Laser
-  private sfx: SpecialEffects;
-  private playerLasers: Group;
-  private enemyLasers: Group;
-  private playerShootDelay: number;
-  private playerShootTick: number;
+  laserKey: string;
+  sfx: SpecialEffects;
 
   constructor() {
     super("MapScene");
@@ -50,6 +46,8 @@ export class MapScene extends Scene {
 
     // Online player
     this.onlinePlayerKey = "onlinePlayer";
+
+    this.laserKey = "sprLaserPlayer";
   }
 
   preload() {
@@ -71,7 +69,7 @@ export class MapScene extends Scene {
     );
 
     // Load player laser
-    this.load.image("sprLaserPlayer", "assets/images/sprLaserPlayer.png");
+    this.load.image(this.laserKey, "assets/images/sprLaserPlayer.png");
     this.load.audio("sndLaserPlayer", "assets/sounds/sndLaserPlayer.wav");
   }
 
@@ -86,17 +84,17 @@ export class MapScene extends Scene {
     );
     this.player = new Player(this, spawnPoint);
 
+    // Special effects
+    this.sfx = {
+      laserPlayer: this.sound.add("sndLaserPlayer"),
+      laserEnemy: this.sound.add("sndLaserPlayer"),
+    };
+
     // update camera
     this.updateCamera();
 
-    // user input
-    //this.cursors = this.input.keyboard.createCursorKeys();
-
     // React to room changes
     this.updateRoom();
-
-    // Special effects
-    this.createLasers();
 
     // Create worldLayer collision graphic above the player, but below the help text
     if (process.env.NODE_ENV === "development") {
@@ -200,67 +198,5 @@ export class MapScene extends Scene {
         this.onlinePlayers[data.sessionId].stopWalking(data.position);
       }
     );
-  }
-
-  private createLasers() {
-    this.sfx = {
-      laserPlayer: this.sound.add("sndLaserPlayer"),
-      laserEnemy: this.sound.add("sndLaserPlayer"),
-    };
-
-    this.enemyLasers = this.add.group();
-    this.playerLasers = this.add.group();
-
-    this.updateLasers();
-    this.updatePlayerShooting();
-
-    this.playerShootDelay = 30;
-    this.playerShootTick = 30;
-  }
-
-  private updateLasers() {
-    this.time.addEvent({
-      delay: 30,
-      callback: function () {
-        for (let i = 0; i < this.playerLasers.getChildren().length; i++) {
-          const laser = this.playerLasers.getChildren()[i];
-
-          laser.y -= laser.displayHeight;
-
-          if (laser.y < 1) {
-            // this.createExplosion(laser.x, laser.y);
-
-            if (laser) {
-              laser.destroy();
-            }
-          }
-        }
-      },
-      callbackScope: this,
-      loop: true,
-    });
-  }
-
-  private updatePlayerShooting() {
-    /*const spaceKey = this.cursors.space;
-    this.time.addEvent({
-      delay: 0,
-      callback: function () {
-        if (spaceKey.isDown && this.player.active) {
-          if (this.playerShootTick < this.playerShootDelay) {
-            this.playerShootTick++;
-          } else {
-            const laser = new PlayerLaser(this, this.player.x, this.player.y);
-            this.playerLasers.add(laser);
-
-            // this.sfx.laserPlayer.play();
-
-            this.playerShootTick = 0;
-          }
-        }
-      },
-      callbackScope: this,
-      loop: true,
-    });*/
   }
 }
