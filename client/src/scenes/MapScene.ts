@@ -24,6 +24,7 @@ export class MapScene extends Scene {
   // Online sprites
   onlinePlayerKey: string;
   private onlinePlayers: { [sessionId: string]: OnlinePlayer } = {};
+  enemies: Group;
   // Laser
   laserKey: string;
   sfx: SpecialEffects;
@@ -83,6 +84,9 @@ export class MapScene extends Scene {
       (obj) => obj.name === "Spawn Point"
     );
     this.player = new Player(this, spawnPoint);
+
+    // Online players
+    this.enemies = this.add.group();
 
     // Special effects
     this.sfx = {
@@ -161,6 +165,7 @@ export class MapScene extends Scene {
 
         if (playerId !== this.room.sessionId) {
           this.onlinePlayers[player.sessionId] = new OnlinePlayer(this, player);
+          this.enemies.add(this.onlinePlayers[player.sessionId]);
         }
       });
     });
@@ -168,11 +173,13 @@ export class MapScene extends Scene {
       // console.debug(RoomEvents.PLAYER_JOINED, data);
       if (!this.onlinePlayers[data.sessionId]) {
         this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
+        this.enemies.add(this.onlinePlayers[data.sessionId]);
       }
     });
     this.room.onMessage(RoomEvents.PLAYER_LEFT, (data) => {
       // console.debug("PLAYER_LEFT");
       if (this.onlinePlayers[data.sessionId]) {
+        this.enemies.remove(this.onlinePlayers[data.sessionId]);
         this.onlinePlayers[data.sessionId].destroy();
         delete this.onlinePlayers[data.sessionId];
       }
@@ -180,6 +187,7 @@ export class MapScene extends Scene {
     this.room.onMessage(RoomEvents.PLAYER_MOVED, (data: ServerPlayer) => {
       if (!this.onlinePlayers[data.sessionId]) {
         this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
+        this.enemies.add(this.onlinePlayers[data.sessionId]);
       }
       // Start animation and set sprite position
       this.onlinePlayers[data.sessionId].isWalking(
@@ -192,6 +200,7 @@ export class MapScene extends Scene {
       RoomEvents.PLAYER_MOVEMENT_ENDED,
       (data: ServerPlayer) => {
         if (!this.onlinePlayers[data.sessionId]) {
+          this.enemies.add(this.onlinePlayers[data.sessionId]);
           this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
         }
         // Stop animation & set sprite texture

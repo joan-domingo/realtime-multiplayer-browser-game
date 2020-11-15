@@ -14,8 +14,15 @@ export default class PlayerLaser extends Sprite {
 
     this.setInteractive();
     this.body.setCollideWorldBounds(true);
+
     this.scene.physics.add.collider(this, scene.obstaclesLayer, () =>
       this.destroy()
+    );
+
+    this.scene.physics.add.collider(
+      this,
+      (this.scene as MapScene).enemies,
+      () => console.log("kill")
     );
 
     switch (lastPosition) {

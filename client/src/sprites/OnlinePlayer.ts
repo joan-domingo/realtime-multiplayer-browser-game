@@ -21,7 +21,6 @@ export default class OnlinePlayer extends Sprite {
 
     this.scene.add.existing(this);
     this.scene.physics.world.enableBody(this);
-    this.scene.physics.add.collider(this, scene.obstaclesLayer);
     this.setScale(1 / 2, 1 / 2);
 
     // Player nickname text
