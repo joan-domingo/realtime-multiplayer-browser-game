@@ -1,10 +1,10 @@
 import Phaser from "phaser";
 import Sprite = Phaser.GameObjects.Sprite;
 import { MapScene } from "../scenes/MapScene";
-import OnlinePlayer from "./OnlinePlayer";
+import OnlinePlayerSprite from "./OnlinePlayerSprite";
 import { ClientRoomEvents } from "../clientModels";
 
-export default class PlayerLaser extends Sprite {
+export default class PlayerLaserSprite extends Sprite {
   body: Phaser.Physics.Arcade.Body;
   private laserVelocity = 100;
   private laserId: string;
@@ -27,7 +27,7 @@ export default class PlayerLaser extends Sprite {
     this.scene.physics.add.collider(this, scene.enemies, (laser, enemy) => {
       laser.destroy();
       // TODO explosion
-      const sessionId = (enemy as OnlinePlayer).getSessionId();
+      const sessionId = (enemy as OnlinePlayerSprite).getSessionId();
       scene.room.send(ClientRoomEvents.PLAYER_DIED, { sessionId });
       scene.room.send(ClientRoomEvents.LASER_ENDED, { laserId: this.laserId });
     });

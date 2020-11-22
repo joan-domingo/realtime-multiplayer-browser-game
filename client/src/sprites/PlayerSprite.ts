@@ -8,9 +8,9 @@ import Key = Phaser.Input.Keyboard.Key;
 import Pointer = Phaser.Input.Pointer;
 import { ClientRoomEvents } from "../clientModels";
 import Group = Phaser.GameObjects.Group;
-import PlayerLaser from "./PlayerLaser";
+import PlayerLaserSprite from "./PlayerLaserSprite";
 
-export default class Player extends Sprite {
+export default class PlayerSprite extends Sprite {
   private speed = 50;
   body: Body;
   // controls
@@ -76,7 +76,7 @@ export default class Player extends Sprite {
     });
     this.playerNickname.setDepth(11);
 
-    Player.createAnimations(scene);
+    PlayerSprite.createAnimations(scene);
 
     this.playerKey = scene.playerKey;
 
@@ -100,7 +100,7 @@ export default class Player extends Sprite {
     if (this.keySpace.isDown && timeNow > this.nextFire) {
       this.nextFire = timeNow + fireRate;
       this.lasers.add(
-        new PlayerLaser(
+        new PlayerLaserSprite(
           this.scene as MapScene,
           this.x,
           this.y,
@@ -110,7 +110,7 @@ export default class Player extends Sprite {
     }
 
     for (let i = 0; i < this.lasers.getChildren().length; i++) {
-      const laser = this.lasers.getChildren()[i] as PlayerLaser;
+      const laser = this.lasers.getChildren()[i] as PlayerLaserSprite;
       laser.update();
     }
   }

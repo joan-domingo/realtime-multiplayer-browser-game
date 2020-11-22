@@ -5,7 +5,7 @@ import Body = Phaser.Physics.Arcade.Body;
 import { MapScene } from "../scenes/MapScene";
 import { ServerPlayer } from "../clientModels";
 
-export default class OnlinePlayer extends Sprite {
+export default class OnlinePlayerSprite extends Sprite {
   body: Body;
   private playerNickname: Text;
   private readonly onlinePlayerKey: string;
@@ -33,7 +33,7 @@ export default class OnlinePlayer extends Sprite {
 
     this.playerNickname.setDepth(11);
 
-    OnlinePlayer.createAnimations(scene);
+    OnlinePlayerSprite.createAnimations(scene);
 
     this.onlinePlayerKey = scene.onlinePlayerKey;
 

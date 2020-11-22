@@ -5,7 +5,7 @@ import { ErrorLoadingScene } from "./scenes/ErrorLoadingScene";
 import { MapScene } from "./scenes/MapScene";
 import { RoomClient } from "./RoomClient";
 import { Chat } from "./Chat";
-import { EnterNickNameScene } from "./scenes/EnterNickname";
+import { EnterNickNameScene } from "./scenes/EnterNicknameScene";
 
 // Load game
 const config: GameConfig = {

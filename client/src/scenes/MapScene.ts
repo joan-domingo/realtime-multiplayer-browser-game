@@ -3,8 +3,8 @@ import Tilemap = Phaser.Tilemaps.Tilemap;
 import StaticTilemapLayer = Phaser.Tilemaps.StaticTilemapLayer;
 import { roomClient } from "../app";
 import { Room } from "colyseus.js";
-import OnlinePlayer from "../sprites/OnlinePlayer";
-import Player from "../sprites/Player";
+import OnlinePlayerSprite from "../sprites/OnlinePlayerSprite";
+import PlayerSprite from "../sprites/PlayerSprite";
 import {
   ClientRoomEvents,
   ServerLaser,
@@ -13,7 +13,7 @@ import {
 } from "../clientModels";
 import Group = Phaser.GameObjects.Group;
 import GameObject = Phaser.GameObjects.GameObject;
-import OnlineLaser from "../sprites/OnlineLaser";
+import OnlineLaserSprite from "../sprites/OnlineLaserSprite";
 
 export class MapScene extends Scene {
   // room
@@ -26,15 +26,15 @@ export class MapScene extends Scene {
   // player
   playerKey: string;
   playerNickname: string;
-  private player: Player;
+  private player: PlayerSprite;
   // Online players
   onlinePlayerKey: string;
-  private onlinePlayers: { [sessionId: string]: OnlinePlayer } = {};
+  private onlinePlayers: { [sessionId: string]: OnlinePlayerSprite } = {};
   enemies: Group;
   // Laser
   laserKey: string;
   sfx: SpecialEffects;
-  private onlineLasers: { [laserId: string]: OnlineLaser } = {};
+  private onlineLasers: { [laserId: string]: OnlineLaserSprite } = {};
   enemyLasers: Group;
 
   constructor() {
@@ -91,7 +91,7 @@ export class MapScene extends Scene {
       "Objects",
       (obj) => obj.name === "Spawn Point"
     );
-    this.player = new Player(this, spawnPoint);
+    this.player = new PlayerSprite(this, spawnPoint);
 
     // Online players
     this.enemies = this.add.group();
@@ -173,7 +173,10 @@ export class MapScene extends Scene {
         const player: ServerPlayer = data.players[playerId];
 
         if (playerId !== this.room.sessionId) {
-          this.onlinePlayers[player.sessionId] = new OnlinePlayer(this, player);
+          this.onlinePlayers[player.sessionId] = new OnlinePlayerSprite(
+            this,
+            player
+          );
           this.enemies.add(this.onlinePlayers[player.sessionId]);
         }
       });
@@ -183,7 +186,10 @@ export class MapScene extends Scene {
       (data: ServerPlayer) => {
         // console.debug(RoomEvents.PLAYER_JOINED, data);
         if (!this.onlinePlayers[data.sessionId]) {
-          this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
+          this.onlinePlayers[data.sessionId] = new OnlinePlayerSprite(
+            this,
+            data
+          );
           this.enemies.add(this.onlinePlayers[data.sessionId]);
         }
       }
@@ -198,7 +204,7 @@ export class MapScene extends Scene {
     });
     this.room.onMessage(ClientRoomEvents.PLAYER_MOVED, (data: ServerPlayer) => {
       if (!this.onlinePlayers[data.sessionId]) {
-        this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
+        this.onlinePlayers[data.sessionId] = new OnlinePlayerSprite(this, data);
         this.enemies.add(this.onlinePlayers[data.sessionId]);
       }
       // Start animation and set sprite position
@@ -213,7 +219,10 @@ export class MapScene extends Scene {
       (data: ServerPlayer) => {
         if (!this.onlinePlayers[data.sessionId]) {
           this.enemies.add(this.onlinePlayers[data.sessionId]);
-          this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
+          this.onlinePlayers[data.sessionId] = new OnlinePlayerSprite(
+            this,
+            data
+          );
         }
         // Stop animation & set sprite texture
         this.onlinePlayers[data.sessionId].stopWalking(data.position);
@@ -221,7 +230,7 @@ export class MapScene extends Scene {
     );
     this.room.onMessage(ClientRoomEvents.LASER_MOVED, (data: ServerLaser) => {
       if (!this.onlineLasers[data.laserId]) {
-        this.onlineLasers[data.laserId] = new OnlineLaser(
+        this.onlineLasers[data.laserId] = new OnlineLaserSprite(
           this,
           data.x,
           data.y,
