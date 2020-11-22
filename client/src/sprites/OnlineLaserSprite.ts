@@ -4,7 +4,12 @@ import { MapScene } from "../scenes/MapScene";
 
 export default class OnlineLaserSprite extends Sprite {
   constructor(scene: MapScene, x: number, y: number, lastPosition: string) {
-    super(scene, x, y, scene.laserKey);
+    super(scene, x, y, scene.onlineLaserKey);
+
+    console.log(lastPosition);
+    if (lastPosition === "right" || lastPosition === "left") {
+      this.setRotation(1.57);
+    }
 
     this.scene.add.existing(this);
   }

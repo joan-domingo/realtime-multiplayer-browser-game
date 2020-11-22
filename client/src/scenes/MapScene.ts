@@ -33,6 +33,7 @@ export class MapScene extends Scene {
   enemies: Group;
   // Laser
   laserKey: string;
+  onlineLaserKey: string;
   sfx: SpecialEffects;
   private onlineLasers: { [laserId: string]: OnlineLaserSprite } = {};
   enemyLasers: Group;
@@ -56,7 +57,8 @@ export class MapScene extends Scene {
     // Online player
     this.onlinePlayerKey = "onlinePlayer";
 
-    this.laserKey = "sprLaserPlayer";
+    this.laserKey = "laser";
+    this.onlineLaserKey = "onlineLaser";
   }
 
   preload() {
@@ -77,8 +79,9 @@ export class MapScene extends Scene {
       "assets/atlas/sprite_stormtrooper.json"
     );
 
-    // Load player laser
-    this.load.image(this.laserKey, "assets/images/sprLaserPlayer.png");
+    // Load lasers
+    this.load.image(this.laserKey, "assets/images/laser.png");
+    this.load.image(this.onlineLaserKey, "assets/images/onlineLaser.png");
     this.load.audio("sndLaserPlayer", "assets/sounds/sndLaserPlayer.wav");
   }
 

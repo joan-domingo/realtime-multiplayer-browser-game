@@ -8,10 +8,16 @@ export default class PlayerLaserSprite extends Sprite {
   body: Phaser.Physics.Arcade.Body;
   private laserVelocity = 100;
   private laserId: string;
+  private lastPosition: string;
 
   constructor(scene: MapScene, x: number, y: number, lastPosition: string) {
     super(scene, x, y, scene.laserKey);
     this.laserId = `${scene.room.sessionId}-${scene.time.now}`;
+    this.lastPosition = lastPosition;
+
+    if (lastPosition === "right" || lastPosition === "left") {
+      this.setRotation(1.57);
+    }
 
     this.scene.add.existing(this);
     this.scene.physics.world.enableBody(this);
@@ -55,7 +61,7 @@ export default class PlayerLaserSprite extends Sprite {
   update() {
     (this.scene as MapScene).room.send(ClientRoomEvents.LASER_MOVED, {
       laserId: this.laserId,
-      position: "xxx",
+      position: this.lastPosition,
       x: this.body.x,
       y: this.body.y,
     });
