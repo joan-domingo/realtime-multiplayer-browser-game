@@ -1,6 +1,4 @@
-import BaseSound = Phaser.Sound.BaseSound;
-
-export enum RoomEvents {
+export enum ServerRoomEvents {
   PLAYER_MOVEMENT_ENDED = "PLAYER_MOVEMENT_ENDED",
   PLAYER_MOVED = "PLAYER_MOVED",
   CURRENT_PLAYERS = "CURRENT_PLAYERS",
@@ -8,19 +6,20 @@ export enum RoomEvents {
   PLAYER_LEFT = "PLAYER_LEFT",
   PLAYER_DIED = "PLAYER_DIED",
   LASER_MOVED = "LASER_MOVED",
-}
-
-export interface SpecialEffects {
-  laserPlayer: BaseSound;
-  laserEnemy: BaseSound;
+  LASER_ENDED = "LASER_ENDED",
 }
 
 export interface ServerPlayer {
   x: number;
   y: number;
+  map: string;
   sessionId: string;
   nickname: string;
   position: string;
+}
+
+export interface ServerPlayers {
+  [key: string]: ServerPlayer;
 }
 
 export interface ServerLaser {
@@ -28,4 +27,5 @@ export interface ServerLaser {
   y: number;
   sessionId: string;
   position: string;
+  laserId: string;
 }

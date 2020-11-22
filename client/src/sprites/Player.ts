@@ -6,7 +6,7 @@ import Text = Phaser.GameObjects.Text;
 import { MapScene } from "../scenes/MapScene";
 import Key = Phaser.Input.Keyboard.Key;
 import Pointer = Phaser.Input.Pointer;
-import { RoomEvents } from "../types";
+import { ClientRoomEvents } from "../clientModels";
 import Group = Phaser.GameObjects.Group;
 import PlayerLaser from "./PlayerLaser";
 
@@ -218,7 +218,7 @@ export default class Player extends Sprite {
 
   sendPlayerMovedEvent(position: "back" | "front" | "left" | "right") {
     this.lastPosition = position;
-    (this.scene as MapScene).room.send(RoomEvents.PLAYER_MOVED, {
+    (this.scene as MapScene).room.send(ClientRoomEvents.PLAYER_MOVED, {
       position: position,
       x: this.body.x,
       y: this.body.y,
@@ -249,7 +249,7 @@ export default class Player extends Sprite {
   }
 
   private sendPlayerStoppedEvent(position: string) {
-    (this.scene as MapScene).room.send(RoomEvents.PLAYER_MOVEMENT_ENDED, {
+    (this.scene as MapScene).room.send(ClientRoomEvents.PLAYER_MOVEMENT_ENDED, {
       position: position,
     });
   }

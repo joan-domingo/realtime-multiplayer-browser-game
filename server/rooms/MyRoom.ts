@@ -1,10 +1,15 @@
 import { Client, Room } from "colyseus";
-import { Player, PlayerLaser, Players } from "../types";
+import {
+  ServerPlayer,
+  ServerLaser,
+  ServerPlayers,
+  ServerRoomEvents,
+} from "../serverModels";
 
 export class MyRoom extends Room {
   // this room supports only 4 clients connected
   // maxClients = 4;
-  private players: Players = {};
+  private players: ServerPlayers = {};
 
   constructor(options: any) {
     super();
@@ -16,33 +21,42 @@ export class MyRoom extends Room {
   onCreate(options: { nickname: string }) {
     // console.debug("ON CREATE", options);
 
-    this.onMessage("PLAYER_MOVED", (player, data) => {
+    this.onMessage(ServerRoomEvents.PLAYER_MOVED, (player, data) => {
       this.players[player.sessionId].x = data.x;
       this.players[player.sessionId].y = data.y;
 
       this.broadcast(
-        "PLAYER_MOVED",
+        ServerRoomEvents.PLAYER_MOVED,
         {
           ...this.players[player.sessionId],
           position: data.position,
           nickname: options.nickname,
-        } as Player,
+        } as ServerPlayer,
         { except: player }
       );
     });
 
-    this.onMessage("PLAYER_MOVEMENT_ENDED", (player, data) => {
+    this.onMessage(ServerRoomEvents.PLAYER_MOVEMENT_ENDED, (player, data) => {
       this.broadcast(
-        "PLAYER_MOVEMENT_ENDED",
+        ServerRoomEvents.PLAYER_MOVEMENT_ENDED,
         {
           sessionId: player.sessionId,
           map: this.players[player.sessionId].map,
           position: data.position,
           nickname: options.nickname,
-        } as Player,
+        } as ServerPlayer,
         { except: player }
       );
     });
+
+    this.onMessage(
+      ServerRoomEvents.PLAYER_DIED,
+      (_player, message: { sessionId: string }) => {
+        this.state.messages.push(
+          `${this.getPlayerNickname(message.sessionId)}: DEAD!!`
+        );
+      }
+    );
 
     this.onMessage("message", (player, message) => {
       /*console.debug(
@@ -57,26 +71,35 @@ export class MyRoom extends Room {
     });
 
     this.onMessage(
-      "LASER_MOVED",
-      (player, message: { position: string; x: number; y: number }) => {
+      ServerRoomEvents.LASER_MOVED,
+      (
+        player,
+        message: { laserId: string; position: string; x: number; y: number }
+      ) => {
         this.broadcast(
-          "LASER_MOVED",
+          ServerRoomEvents.LASER_MOVED,
           {
             sessionId: player.sessionId,
+            laserId: message.laserId,
             position: message.position,
             x: message.x,
             y: message.y,
-          } as PlayerLaser,
+          } as ServerLaser,
           { except: player }
         );
       }
     );
 
-    this.onMessage("PLAYER_DIED", (_player, message: { sessionId: string }) => {
-      this.state.messages.push(
-        `${this.getPlayerNickname(message.sessionId)}: DEAD!!`
-      );
-    });
+    this.onMessage(
+      ServerRoomEvents.LASER_ENDED,
+      (client, message: { laserId: string }) => {
+        this.broadcast(
+          ServerRoomEvents.LASER_ENDED,
+          { laserId: message.laserId },
+          { except: client }
+        );
+      }
+    );
 
     this.onMessage("*", (client, type) => {
       console.warn("messageType not handled by the Room: " + type);
@@ -97,14 +120,14 @@ export class MyRoom extends Room {
 
     setTimeout(
       () =>
-        player.send("CURRENT_PLAYERS", {
+        player.send(ServerRoomEvents.CURRENT_PLAYERS, {
           players: this.players,
         }),
       500
     );
 
     this.broadcast(
-      "PLAYER_JOINED",
+      ServerRoomEvents.PLAYER_JOINED,
       { ...this.players[player.sessionId] },
       { except: player }
     );
@@ -118,7 +141,7 @@ export class MyRoom extends Room {
       `${this.getPlayerNickname(player.sessionId)} left.`
     );
 
-    this.broadcast("PLAYER_LEFT", {
+    this.broadcast(ServerRoomEvents.PLAYER_LEFT, {
       sessionId: player.sessionId,
       map: this.players[player.sessionId].map,
     });

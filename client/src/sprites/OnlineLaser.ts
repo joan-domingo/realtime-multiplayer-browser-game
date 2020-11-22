@@ -8,4 +8,8 @@ export default class OnlineLaser extends Sprite {
 
     this.scene.add.existing(this);
   }
+
+  move(x: number, y: number) {
+    this.setPosition(x, y);
+  }
 }

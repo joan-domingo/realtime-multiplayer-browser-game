@@ -6,11 +6,11 @@ import { Room } from "colyseus.js";
 import OnlinePlayer from "../sprites/OnlinePlayer";
 import Player from "../sprites/Player";
 import {
-  RoomEvents,
+  ClientRoomEvents,
   ServerLaser,
   ServerPlayer,
   SpecialEffects,
-} from "../types";
+} from "../clientModels";
 import Group = Phaser.GameObjects.Group;
 import GameObject = Phaser.GameObjects.GameObject;
 import OnlineLaser from "../sprites/OnlineLaser";
@@ -34,7 +34,8 @@ export class MapScene extends Scene {
   // Laser
   laserKey: string;
   sfx: SpecialEffects;
-  onlineLasers: Group;
+  private onlineLasers: { [laserId: string]: OnlineLaser } = {};
+  enemyLasers: Group;
 
   constructor() {
     super("MapScene");
@@ -94,7 +95,7 @@ export class MapScene extends Scene {
 
     // Online players
     this.enemies = this.add.group();
-    this.onlineLasers = this.add.group();
+    this.enemyLasers = this.add.group();
 
     // Special effects
     this.sfx = {
@@ -166,7 +167,7 @@ export class MapScene extends Scene {
   }
 
   private updateRoom() {
-    this.room.onMessage(RoomEvents.CURRENT_PLAYERS, (data) => {
+    this.room.onMessage(ClientRoomEvents.CURRENT_PLAYERS, (data) => {
       // console.debug(RoomEvents.CURRENT_PLAYERS, data);
       Object.keys(data.players).forEach((playerId) => {
         const player: ServerPlayer = data.players[playerId];
@@ -177,14 +178,17 @@ export class MapScene extends Scene {
         }
       });
     });
-    this.room.onMessage(RoomEvents.PLAYER_JOINED, (data: ServerPlayer) => {
-      // console.debug(RoomEvents.PLAYER_JOINED, data);
-      if (!this.onlinePlayers[data.sessionId]) {
-        this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
-        this.enemies.add(this.onlinePlayers[data.sessionId]);
+    this.room.onMessage(
+      ClientRoomEvents.PLAYER_JOINED,
+      (data: ServerPlayer) => {
+        // console.debug(RoomEvents.PLAYER_JOINED, data);
+        if (!this.onlinePlayers[data.sessionId]) {
+          this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
+          this.enemies.add(this.onlinePlayers[data.sessionId]);
+        }
       }
-    });
-    this.room.onMessage(RoomEvents.PLAYER_LEFT, (data) => {
+    );
+    this.room.onMessage(ClientRoomEvents.PLAYER_LEFT, (data) => {
       // console.debug("PLAYER_LEFT");
       if (this.onlinePlayers[data.sessionId]) {
         this.enemies.remove(this.onlinePlayers[data.sessionId]);
@@ -192,7 +196,7 @@ export class MapScene extends Scene {
         delete this.onlinePlayers[data.sessionId];
       }
     });
-    this.room.onMessage(RoomEvents.PLAYER_MOVED, (data: ServerPlayer) => {
+    this.room.onMessage(ClientRoomEvents.PLAYER_MOVED, (data: ServerPlayer) => {
       if (!this.onlinePlayers[data.sessionId]) {
         this.onlinePlayers[data.sessionId] = new OnlinePlayer(this, data);
         this.enemies.add(this.onlinePlayers[data.sessionId]);
@@ -205,7 +209,7 @@ export class MapScene extends Scene {
       );
     });
     this.room.onMessage(
-      RoomEvents.PLAYER_MOVEMENT_ENDED,
+      ClientRoomEvents.PLAYER_MOVEMENT_ENDED,
       (data: ServerPlayer) => {
         if (!this.onlinePlayers[data.sessionId]) {
           this.enemies.add(this.onlinePlayers[data.sessionId]);
@@ -215,13 +219,27 @@ export class MapScene extends Scene {
         this.onlinePlayers[data.sessionId].stopWalking(data.position);
       }
     );
-    this.room.onMessage(RoomEvents.LASER_MOVED, (data: ServerLaser) => {
-      if (this.onlineLasers.getLength() > 0) {
-        this.onlineLasers.getChildren()[0].destroy(true);
+    this.room.onMessage(ClientRoomEvents.LASER_MOVED, (data: ServerLaser) => {
+      if (!this.onlineLasers[data.laserId]) {
+        this.onlineLasers[data.laserId] = new OnlineLaser(
+          this,
+          data.x,
+          data.y,
+          data.position
+        );
+        this.enemyLasers.add(this.onlineLasers[data.laserId]);
       }
-      this.onlineLasers.add(
-        new OnlineLaser(this, data.x, data.y, data.position)
-      );
+      this.onlineLasers[data.laserId].move(data.x, data.y);
     });
+    this.room.onMessage(
+      ClientRoomEvents.LASER_ENDED,
+      (data: { laserId: string }) => {
+        if (this.onlineLasers[data.laserId]) {
+          this.enemyLasers.remove(this.onlineLasers[data.laserId]);
+          this.onlineLasers[data.laserId].destroy();
+          delete this.onlineLasers[data.laserId];
+        }
+      }
+    );
   }
 }

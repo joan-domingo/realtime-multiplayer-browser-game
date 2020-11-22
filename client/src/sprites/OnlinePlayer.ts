@@ -3,7 +3,7 @@ import Text = Phaser.GameObjects.Text;
 import Sprite = Phaser.GameObjects.Sprite;
 import Body = Phaser.Physics.Arcade.Body;
 import { MapScene } from "../scenes/MapScene";
-import { ServerPlayer } from "../types";
+import { ServerPlayer } from "../clientModels";
 
 export default class OnlinePlayer extends Sprite {
   body: Body;
