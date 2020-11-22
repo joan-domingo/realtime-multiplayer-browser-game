@@ -109,11 +109,12 @@ export class MyRoom extends Room {
   onJoin(player: Client, options: { nickname: string }) {
     // console.debug("ON JOIN", options);
 
+    // TODO better: spawn point
     this.players[player.sessionId] = {
       sessionId: player.sessionId,
       map: "town",
-      x: 50,
-      y: 100,
+      x: 94.2881,
+      y: 300.629,
       nickname: options.nickname,
       position: "front",
     };

@@ -14,6 +14,7 @@ import {
 import Group = Phaser.GameObjects.Group;
 import GameObject = Phaser.GameObjects.GameObject;
 import OnlineLaserSprite from "../sprites/OnlineLaserSprite";
+import TiledObject = Phaser.Types.Tilemaps.TiledObject;
 
 export class MapScene extends Scene {
   // room
@@ -90,10 +91,10 @@ export class MapScene extends Scene {
     this.createMap();
 
     // create player
-    const spawnPoint: GameObject = this.map.findObject(
-      "Objects",
-      (obj) => obj.name === "Spawn Point"
-    );
+    const spawnPoint: TiledObject = {
+      ...this.map.findObject("Objects", (obj) => obj.name === "Spawn Point"),
+      id: 0,
+    };
     this.player = new PlayerSprite(this, spawnPoint);
 
     // Online players
@@ -145,7 +146,7 @@ export class MapScene extends Scene {
     this.obstaclesLayer = this.map.createStaticLayer("Walls", tileSet, 0, 0);
 
     // Create collision for obstacles layer
-    this.obstaclesLayer.setCollision([5, 47]);
+    this.obstaclesLayer.setCollision([5, 15, 72, 47]);
   }
 
   private static getDefaultTilesetName(tilesetKey: string): string {

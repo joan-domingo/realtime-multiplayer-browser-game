@@ -9,6 +9,7 @@ import Pointer = Phaser.Input.Pointer;
 import { ClientRoomEvents } from "../clientModels";
 import Group = Phaser.GameObjects.Group;
 import PlayerLaserSprite from "./PlayerLaserSprite";
+import TiledObject = Phaser.Types.Tilemaps.TiledObject;
 
 export default class PlayerSprite extends Sprite {
   private speed = 50;
@@ -29,7 +30,7 @@ export default class PlayerSprite extends Sprite {
   private lasers: Group;
   private nextFire = 0;
 
-  constructor(scene: MapScene, spawnPoint: any) {
+  constructor(scene: MapScene, spawnPoint: TiledObject) {
     super(
       scene,
       spawnPoint.x,
