@@ -10,16 +10,13 @@ import { ClientRoomEvents } from "../clientModels";
 import Group = Phaser.GameObjects.Group;
 import PlayerLaserSprite from "./PlayerLaserSprite";
 import TiledObject = Phaser.Types.Tilemaps.TiledObject;
+import { chat } from "../app";
 
 export default class PlayerSprite extends Sprite {
   private speed = 50;
   body: Body;
   // controls
   private cursors: CursorKeys;
-  private keyA: Key;
-  private keyS: Key;
-  private keyD: Key;
-  private keyW: Key;
   private keySpace: Key;
   private pointer: Pointer;
   // player
@@ -50,18 +47,6 @@ export default class PlayerSprite extends Sprite {
     // Register cursors for player movement
     this.scene.input.setPollAlways();
     this.cursors = this.scene.input.keyboard.createCursorKeys();
-    this.keyA = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.A
-    );
-    this.keyS = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.S
-    );
-    this.keyD = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.D
-    );
-    this.keyW = this.scene.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.W
-    );
     this.keySpace = this.scene.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.SPACE
     );
@@ -98,7 +83,7 @@ export default class PlayerSprite extends Sprite {
     const fireRate = 200;
     const timeNow = this.scene.time.now;
 
-    if (this.keySpace.isDown && timeNow > this.nextFire) {
+    if (!chat.isFocused() && this.keySpace.isDown && timeNow > this.nextFire) {
       this.nextFire = timeNow + fireRate;
       this.lasers.add(
         new PlayerLaserSprite(
@@ -122,15 +107,15 @@ export default class PlayerSprite extends Sprite {
     this.body.setVelocity(0, 0);
 
     // Keyboard
-    if (this.cursors.left.isDown || this.keyA.isDown) {
+    if (this.cursors.left.isDown) {
       this.goLeft();
-    } else if (this.cursors.right.isDown || this.keyD.isDown) {
+    } else if (this.cursors.right.isDown) {
       this.goRight();
     }
 
-    if (this.cursors.up.isDown || this.keyW.isDown) {
+    if (this.cursors.up.isDown) {
       this.goBack();
-    } else if (this.cursors.down.isDown || this.keyS.isDown) {
+    } else if (this.cursors.down.isDown) {
       this.goFront();
     }
 
@@ -155,28 +140,24 @@ export default class PlayerSprite extends Sprite {
     // Update the animation last and give left/right animations precedence over up/down animations
     if (
       this.cursors.left.isDown ||
-      this.keyA.isDown ||
       (this.pointer.isDown && this.pointer.worldX < this.body.x)
     ) {
       this.sendPlayerMovedEvent("left");
       this.anims.play("jedi-left", true);
     } else if (
       this.cursors.right.isDown ||
-      this.keyD.isDown ||
       (this.pointer.isDown && this.pointer.worldX > this.body.x + 16)
     ) {
       this.sendPlayerMovedEvent("right");
       this.anims.play("jedi-right", true);
     } else if (
       this.cursors.up.isDown ||
-      this.keyW.isDown ||
       (this.pointer.isDown && this.pointer.worldY < this.body.y)
     ) {
       this.sendPlayerMovedEvent("back");
       this.anims.play("jedi-back", true);
     } else if (
       this.cursors.down.isDown ||
-      this.keyS.isDown ||
       (this.pointer.isDown && this.pointer.worldY > this.body.y + 24)
     ) {
       this.sendPlayerMovedEvent("front");
@@ -266,6 +247,7 @@ export default class PlayerSprite extends Sprite {
     this.clearTint();
     this.setPosition(x, y);
 
+    this.setTexture(this.playerKey, "jedi-front-00.png");
     this.showPlayerNickname();
   }
 

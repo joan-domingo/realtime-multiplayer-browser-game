@@ -26,7 +26,7 @@ export class Chat {
         }
       }
       if (event.which === 32) {
-        if (document.activeElement === this.inputMessage) {
+        if (this.isFocused()) {
           this.inputMessage.value = this.inputMessage.value + " ";
         }
       }
@@ -63,5 +63,9 @@ export class Chat {
 
         (this.messagesUL.lastChild as HTMLLIElement).scrollIntoView();
       });
+  }
+
+  isFocused() {
+    return document.activeElement === this.inputMessage;
   }
 }

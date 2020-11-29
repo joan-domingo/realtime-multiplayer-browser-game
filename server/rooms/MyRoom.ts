@@ -142,7 +142,7 @@ export class MyRoom extends Room {
       { except: player }
     );
 
-    this.state.messages.push(`${options.nickname} joined. Say hello!`);
+    this.state.messages.push(`${options.nickname} joined 👋`);
   }
 
   onLeave(player: Client, consented: boolean) {

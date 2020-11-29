@@ -97,6 +97,7 @@ export default class OnlinePlayerSprite extends Sprite {
     this.clearTint();
     this.setPosition(x, y);
 
+    this.setTexture(this.onlinePlayerKey, "stormtrooper-front-00.png");
     this.showOnlinePlayerNickname();
   }
 }
