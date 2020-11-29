@@ -55,19 +55,25 @@ export class MyRoom extends Room {
         this.state.messages.push(
           `${this.getPlayerNickname(message.deadPlayerSessionId)}: died 💀`
         );
+
         this.broadcast(ServerRoomEvents.PLAYER_DIED, {
           ...this.players[message.deadPlayerSessionId],
         } as ServerPlayer);
+
+        // Revive player in 3 seconds
+        setTimeout(() => {
+          if (this.players[message.deadPlayerSessionId]) {
+            this.broadcast(ServerRoomEvents.PLAYER_REVIVED, {
+              ...this.players[message.deadPlayerSessionId],
+              x: 94.2881,
+              y: 300.629,
+            } as ServerPlayer);
+          }
+        }, 3000);
       }
     );
 
     this.onMessage("message", (player, message) => {
-      /*console.debug(
-        "Room received message from",
-        client.sessionId,
-        ":",
-        message
-      );*/
       this.state.messages.push(
         `${this.getPlayerNickname(player.sessionId)}: ${message}`
       );

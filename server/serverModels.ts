@@ -7,6 +7,7 @@ export enum ServerRoomEvents {
   PLAYER_DIED = "PLAYER_DIED",
   LASER_MOVED = "LASER_MOVED",
   LASER_ENDED = "LASER_ENDED",
+  PLAYER_REVIVED = "PLAYER_REVIVED",
 }
 
 export interface ServerPlayer {

@@ -91,4 +91,12 @@ export default class OnlinePlayerSprite extends Sprite {
     this.body.setEnable(false);
     this.setTint(0xff0000);
   }
+
+  revive(x: number, y: number) {
+    this.body.setEnable(true);
+    this.clearTint();
+    this.setPosition(x, y);
+
+    this.showOnlinePlayerNickname();
+  }
 }

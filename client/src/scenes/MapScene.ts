@@ -244,8 +244,26 @@ export class MapScene extends Scene {
           );
         }
         this.onlinePlayers[data.sessionId].die();
+        // TODO show seconds counter back to life
       }
     });
+    this.room.onMessage(
+      ClientRoomEvents.PLAYER_REVIVED,
+      (data: ServerPlayer) => {
+        if (this.room.sessionId === data.sessionId) {
+          this.player.revive(data.x, data.y);
+        } else {
+          if (!this.onlinePlayers[data.sessionId]) {
+            this.enemies.add(this.onlinePlayers[data.sessionId]);
+            this.onlinePlayers[data.sessionId] = new OnlinePlayerSprite(
+              this,
+              data
+            );
+          }
+          this.onlinePlayers[data.sessionId].revive(data.x, data.y);
+        }
+      }
+    );
     this.room.onMessage(ClientRoomEvents.LASER_MOVED, (data: ServerLaser) => {
       if (!this.onlineLasers[data.laserId]) {
         this.onlineLasers[data.laserId] = new OnlineLaserSprite(
