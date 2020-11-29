@@ -103,8 +103,8 @@ export default class PlayerSprite extends Sprite {
       this.lasers.add(
         new PlayerLaserSprite(
           this.scene as MapScene,
-          this.x,
-          this.y,
+          this.x + this.width / 4,
+          this.y + this.height / 4,
           this.lastPosition
         )
       );
