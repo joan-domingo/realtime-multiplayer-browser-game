@@ -33,8 +33,8 @@ export default class PlayerLaserSprite extends Sprite {
     this.scene.physics.add.collider(this, scene.enemies, (laser, enemy) => {
       laser.destroy();
       // TODO explosion
-      const sessionId = (enemy as OnlinePlayerSprite).getSessionId();
-      scene.room.send(ClientRoomEvents.PLAYER_DIED, { sessionId });
+      const deadPlayerSessionId = (enemy as OnlinePlayerSprite).getSessionId();
+      scene.room.send(ClientRoomEvents.PLAYER_DIED, { deadPlayerSessionId });
       scene.room.send(ClientRoomEvents.LASER_ENDED, { laserId: this.laserId });
     });
 

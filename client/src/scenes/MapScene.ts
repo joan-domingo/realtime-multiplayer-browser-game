@@ -232,6 +232,20 @@ export class MapScene extends Scene {
         this.onlinePlayers[data.sessionId].stopWalking(data.position);
       }
     );
+    this.room.onMessage(ClientRoomEvents.PLAYER_DIED, (data: ServerPlayer) => {
+      if (this.room.sessionId === data.sessionId) {
+        this.player.die();
+      } else {
+        if (!this.onlinePlayers[data.sessionId]) {
+          this.enemies.add(this.onlinePlayers[data.sessionId]);
+          this.onlinePlayers[data.sessionId] = new OnlinePlayerSprite(
+            this,
+            data
+          );
+        }
+        this.onlinePlayers[data.sessionId].die();
+      }
+    });
     this.room.onMessage(ClientRoomEvents.LASER_MOVED, (data: ServerLaser) => {
       if (!this.onlineLasers[data.laserId]) {
         this.onlineLasers[data.laserId] = new OnlineLaserSprite(

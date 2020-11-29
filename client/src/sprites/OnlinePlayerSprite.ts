@@ -85,4 +85,10 @@ export default class OnlinePlayerSprite extends Sprite {
   getSessionId(): string {
     return this.sessionId;
   }
+
+  die() {
+    this.body.setVelocity(0, 0);
+    this.body.setEnable(false);
+    this.setTint(0xff0000);
+  }
 }

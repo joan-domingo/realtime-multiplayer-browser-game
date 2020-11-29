@@ -51,10 +51,13 @@ export class MyRoom extends Room {
 
     this.onMessage(
       ServerRoomEvents.PLAYER_DIED,
-      (_player, message: { sessionId: string }) => {
+      (player, message: { deadPlayerSessionId: string }) => {
         this.state.messages.push(
-          `${this.getPlayerNickname(message.sessionId)}: DEAD!!`
+          `${this.getPlayerNickname(message.deadPlayerSessionId)}: died 💀`
         );
+        this.broadcast(ServerRoomEvents.PLAYER_DIED, {
+          ...this.players[message.deadPlayerSessionId],
+        } as ServerPlayer);
       }
     );
 

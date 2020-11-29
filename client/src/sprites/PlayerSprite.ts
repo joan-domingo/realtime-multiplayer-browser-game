@@ -255,6 +255,12 @@ export default class PlayerSprite extends Sprite {
     });
   }
 
+  die() {
+    this.body.setVelocity(0, 0);
+    this.body.setEnable(false);
+    this.setTint(0xff0000);
+  }
+
   destroy() {
     super.destroy();
     this.playerNickname.destroy();
