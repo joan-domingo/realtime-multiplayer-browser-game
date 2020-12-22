@@ -3,8 +3,12 @@ import Sprite = Phaser.GameObjects.Sprite;
 import Text = Phaser.GameObjects.Text;
 import Body = Phaser.Physics.Arcade.Body;
 
+type Position = "left" | "right" | "front" | "back";
+
 export default class BasePlayerSprite extends Sprite {
   private nicknameText: Text;
+  private readonly textureKey: string;
+  private readonly textureCharacter: string;
   playerSpeed = 50;
 
   body: Body;
@@ -22,6 +26,9 @@ export default class BasePlayerSprite extends Sprite {
     this.scene.add.existing(this);
     this.scene.physics.world.enableBody(this);
     this.setScale(1 / 2, 1 / 2);
+
+    this.textureKey = textureKey;
+    this.textureCharacter = textureCharacter;
 
     // Set depth (z-index)
     this.setDepth(1);
@@ -58,6 +65,13 @@ export default class BasePlayerSprite extends Sprite {
 
   goLeft() {
     this.body.setVelocityX(-this.playerSpeed);
+  }
+
+  setTextureFrame(position: Position) {
+    this.setTexture(
+      this.textureKey,
+      `${this.textureCharacter}-${position}-00.png`
+    );
   }
 
   destroy(fromScene?: boolean) {

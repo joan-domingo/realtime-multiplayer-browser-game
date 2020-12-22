@@ -16,7 +16,6 @@ export default class PlayerSprite extends BasePlayerSprite {
   private keySpace: Key;
   private pointer: Pointer;
   // player
-  private playerKey: string;
   private lastPosition: "back" | "front" | "left" | "right" = "front";
   // Lasers
   private lasers: Group;
@@ -43,8 +42,6 @@ export default class PlayerSprite extends BasePlayerSprite {
       Phaser.Input.Keyboard.KeyCodes.SPACE
     );
     this.pointer = this.scene.input.activePointer;
-
-    this.playerKey = scene.playerKey;
 
     this.lasers = this.scene.add.group();
   }
@@ -145,16 +142,16 @@ export default class PlayerSprite extends BasePlayerSprite {
 
       // If we were moving, pick and idle frame to use
       if (prevVelocity.x < 0) {
-        this.setTexture(this.playerKey, "jedi-left-00.png");
+        this.setTextureFrame("left");
         this.sendPlayerStoppedEvent("left");
       } else if (prevVelocity.x > 0) {
-        this.setTexture(this.playerKey, "jedi-right-00.png");
+        this.setTextureFrame("right");
         this.sendPlayerStoppedEvent("right");
       } else if (prevVelocity.y < 0) {
-        this.setTexture(this.playerKey, "jedi-back-00.png");
+        this.setTextureFrame("back");
         this.sendPlayerStoppedEvent("back");
       } else if (prevVelocity.y > 0) {
-        this.setTexture(this.playerKey, "jedi-front-00.png");
+        this.setTextureFrame("front");
         this.sendPlayerStoppedEvent("front");
       }
     }
@@ -186,7 +183,7 @@ export default class PlayerSprite extends BasePlayerSprite {
     this.clearTint();
     this.setPosition(x, y);
 
-    this.setTexture(this.playerKey, "jedi-front-00.png");
+    this.setTextureFrame("front");
     this.renderNickname();
   }
 }

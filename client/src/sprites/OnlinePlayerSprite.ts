@@ -3,8 +3,7 @@ import { ServerPlayer } from "../clientModels";
 import BasePlayerSprite from "./BasePlayerSprite";
 
 export default class OnlinePlayerSprite extends BasePlayerSprite {
-  private readonly onlinePlayerKey: string;
-  private readonly sessionId: string;
+  readonly sessionId: string;
 
   constructor(scene: MapScene, player: ServerPlayer) {
     super(
@@ -15,8 +14,6 @@ export default class OnlinePlayerSprite extends BasePlayerSprite {
       player.nickname,
       "stormtrooper"
     );
-
-    this.onlinePlayerKey = scene.onlinePlayerKey;
 
     this.sessionId = player.sessionId;
   }
@@ -30,11 +27,7 @@ export default class OnlinePlayerSprite extends BasePlayerSprite {
 
   stopWalking(position: string) {
     this.anims.stop();
-    this.setTexture(this.onlinePlayerKey, `stormtrooper-${position}-00.png`);
-  }
-
-  getSessionId(): string {
-    return this.sessionId;
+    this.setTexture(position);
   }
 
   die() {
@@ -48,7 +41,7 @@ export default class OnlinePlayerSprite extends BasePlayerSprite {
     this.clearTint();
     this.setPosition(x, y);
 
-    this.setTexture(this.onlinePlayerKey, "stormtrooper-front-00.png");
+    this.setTextureFrame("front");
     this.renderNickname();
   }
 }
