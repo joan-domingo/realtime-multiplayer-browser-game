@@ -6,18 +6,21 @@ import { ClientRoomEvents } from "../clientModels";
 
 export default class PlayerLaserSprite extends Sprite {
   body: Phaser.Physics.Arcade.Body;
-  private laserVelocity = 100;
+  private laserVelocity = 200;
   private laserId: string;
   private lastPosition: string;
 
   constructor(scene: MapScene, x: number, y: number, lastPosition: string) {
-    super(scene, x, y, scene.laserKey);
+    super(
+      scene,
+      x,
+      y,
+      lastPosition === "right" || lastPosition === "left"
+        ? scene.horizontalLaserKey
+        : scene.laserKey
+    );
     this.laserId = `${scene.room.sessionId}-${scene.time.now}`;
     this.lastPosition = lastPosition;
-
-    if (lastPosition === "right" || lastPosition === "left") {
-      this.setRotation(1.57);
-    }
 
     this.scene.add.existing(this);
     this.scene.physics.world.enableBody(this);

@@ -34,7 +34,9 @@ export class MapScene extends Scene {
   enemies: Group;
   // Laser
   laserKey: string;
+  horizontalLaserKey: string;
   onlineLaserKey: string;
+  horizontalOnlineLaserKey: string;
   sfx: SpecialEffects;
   private onlineLasers: { [laserId: string]: OnlineLaserSprite } = {};
   enemyLasers: Group;
@@ -59,7 +61,9 @@ export class MapScene extends Scene {
     this.onlinePlayerKey = "onlinePlayer";
 
     this.laserKey = "laser";
+    this.horizontalLaserKey = "laser_horizontal";
     this.onlineLaserKey = "onlineLaser";
+    this.horizontalOnlineLaserKey = "onlineLaser_horizontal";
   }
 
   preload() {
@@ -82,7 +86,15 @@ export class MapScene extends Scene {
 
     // Load lasers
     this.load.image(this.laserKey, "assets/images/laser.png");
+    this.load.image(
+      this.horizontalLaserKey,
+      "assets/images/laser_horizontal.png"
+    );
     this.load.image(this.onlineLaserKey, "assets/images/onlineLaser.png");
+    this.load.image(
+      this.horizontalOnlineLaserKey,
+      "assets/images/onlineLaser_horizontal.png"
+    );
     this.load.audio("sndLaserPlayer", "assets/sounds/sndLaserPlayer.wav");
   }
 
