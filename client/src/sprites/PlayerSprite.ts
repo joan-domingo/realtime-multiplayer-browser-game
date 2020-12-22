@@ -1,8 +1,5 @@
 import Phaser from "phaser";
-import Sprite = Phaser.GameObjects.Sprite;
 import CursorKeys = Phaser.Types.Input.Keyboard.CursorKeys;
-import Body = Phaser.Physics.Arcade.Body;
-import Text = Phaser.GameObjects.Text;
 import { MapScene } from "../scenes/MapScene";
 import Key = Phaser.Input.Keyboard.Key;
 import Pointer = Phaser.Input.Pointer;
@@ -11,16 +8,14 @@ import Group = Phaser.GameObjects.Group;
 import PlayerLaserSprite from "./PlayerLaserSprite";
 import TiledObject = Phaser.Types.Tilemaps.TiledObject;
 import { chat } from "../app";
+import BasePlayerSprite from "./BasePlayerSprite";
 
-export default class PlayerSprite extends Sprite {
-  private speed = 50;
-  body: Body;
+export default class PlayerSprite extends BasePlayerSprite {
   // controls
   private cursors: CursorKeys;
   private keySpace: Key;
   private pointer: Pointer;
   // player
-  private playerNickname: Text;
   private playerKey: string;
   private lastPosition: "back" | "front" | "left" | "right" = "front";
   // Lasers
@@ -33,12 +28,9 @@ export default class PlayerSprite extends Sprite {
       spawnPoint.x,
       spawnPoint.y,
       scene.playerKey,
-      `jedi-front-00.png`
+      scene.playerNickname,
+      "jedi"
     );
-
-    this.scene.add.existing(this);
-    this.scene.physics.world.enableBody(this);
-    this.setScale(1 / 2, 1 / 2);
 
     this.setInteractive();
     this.body.setCollideWorldBounds(true);
@@ -52,27 +44,13 @@ export default class PlayerSprite extends Sprite {
     );
     this.pointer = this.scene.input.activePointer;
 
-    // Set depth (z-index)
-    this.setDepth(1);
-
-    // Player nickname text
-    this.playerNickname = this.scene.add.text(0, 0, scene.playerNickname, {
-      fontSize: 8,
-      resolution: 10,
-    });
-    this.playerNickname.setDepth(11);
-
-    PlayerSprite.createAnimations(scene);
-
     this.playerKey = scene.playerKey;
-
-    this.setOrigin(0, 0);
 
     this.lasers = this.scene.add.group();
   }
 
   update(time: number, delta: number) {
-    this.showPlayerNickname();
+    this.renderNickname();
 
     this.updatePlayerPosition();
 
@@ -135,7 +113,7 @@ export default class PlayerSprite extends Sprite {
     }
 
     // Normalize and scale the velocity so that player can't move faster along a diagonal
-    this.body.velocity.normalize().scale(this.speed);
+    this.body.velocity.normalize().scale(this.playerSpeed);
 
     // Update the animation last and give left/right animations precedence over up/down animations
     if (
@@ -182,51 +160,12 @@ export default class PlayerSprite extends Sprite {
     }
   }
 
-  private goFront() {
-    this.body.setVelocityY(this.speed);
-  }
-
-  private goBack() {
-    this.body.setVelocityY(-this.speed);
-  }
-
-  private goRight() {
-    this.body.setVelocityX(this.speed);
-  }
-
-  private goLeft() {
-    this.body.setVelocityX(-this.speed);
-  }
-
   sendPlayerMovedEvent(position: "back" | "front" | "left" | "right") {
     this.lastPosition = position;
     (this.scene as MapScene).room.send(ClientRoomEvents.PLAYER_MOVED, {
       position: position,
       x: this.body.x,
       y: this.body.y,
-    });
-  }
-
-  showPlayerNickname() {
-    this.playerNickname.x = this.x;
-    this.playerNickname.y = this.y - this.height / 4;
-  }
-
-  private static createAnimations(scene: MapScene) {
-    // Create the player's walking animations from the texture currentPlayer.
-    ["front", "back", "right", "left"].forEach((position) => {
-      scene.anims.create({
-        key: `jedi-${position}`,
-        frames: scene.anims.generateFrameNames(scene.playerKey, {
-          start: 0,
-          end: 3,
-          zeroPad: 2,
-          prefix: `jedi-${position}-`,
-          suffix: ".png",
-        }),
-        frameRate: 10,
-        repeat: -1,
-      });
     });
   }
 
@@ -248,11 +187,6 @@ export default class PlayerSprite extends Sprite {
     this.setPosition(x, y);
 
     this.setTexture(this.playerKey, "jedi-front-00.png");
-    this.showPlayerNickname();
-  }
-
-  destroy() {
-    super.destroy();
-    this.playerNickname.destroy();
+    this.renderNickname();
   }
 }
