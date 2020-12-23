@@ -45,13 +45,13 @@ export class MapScene extends Scene {
     super("MapScene");
   }
 
-  init(data: { nickname: string }): void {
+  init(data: { nickname: string; map: string }): void {
     // room
     this.room = roomClient.getRoomInstance();
 
     // map
-    this.tileMapKey = "/assets/tilemaps/scifi";
-    this.tileSetKey = "/assets/tilesets/scifitiles-sheet";
+    this.tileMapKey = `/assets/tilemaps/${data.map}`;
+    this.tileSetKey = `/assets/tilesets/${data.map}tiles-sheet`;
 
     // player
     this.playerKey = "currentPlayer";
@@ -103,10 +103,7 @@ export class MapScene extends Scene {
     this.createMap();
 
     // create player
-    const spawnPoint: TiledObject = {
-      ...this.map.findObject("Objects", (obj) => obj.name === "Spawn Point"),
-      id: 0,
-    };
+    const spawnPoint: TiledObject = this.findSpawnPoint();
     this.player = new PlayerSprite(this, spawnPoint);
 
     // Online players
@@ -136,6 +133,18 @@ export class MapScene extends Scene {
     }
   }
 
+  private findSpawnPoint() {
+    let spanPointName = "Spawn Point";
+    if (this.tileSetKey === "/assets/tilesets/parktiles-sheet") {
+      const randomNumber = Math.floor(Math.random() * 10 + 1);
+      spanPointName = `SP${randomNumber}`;
+    }
+    return {
+      ...this.map.findObject("Objects", (obj) => obj.name === spanPointName),
+      id: 0,
+    };
+  }
+
   private createMap() {
     // create the map
     this.map = this.make.tilemap({
@@ -158,7 +167,11 @@ export class MapScene extends Scene {
     this.obstaclesLayer = this.map.createStaticLayer("Walls", tileSet, 0, 0);
 
     // Create collision for obstacles layer
-    this.obstaclesLayer.setCollision([5, 15, 72, 47]);
+    if (this.tileSetKey === "/assets/tilesets/parktiles-sheet") {
+      this.obstaclesLayer.setCollision([2, 4, 5]);
+    } else {
+      this.obstaclesLayer.setCollision([5, 15, 72, 47]);
+    }
   }
 
   private static getDefaultTilesetName(tilesetKey: string): string {

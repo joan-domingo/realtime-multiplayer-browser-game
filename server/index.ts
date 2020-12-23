@@ -2,7 +2,8 @@ import http from "http";
 import express from "express";
 import cors from "cors";
 import { Server } from "colyseus";
-import { MyRoom } from "./rooms/MyRoom";
+import { ScifiRoom } from "./rooms/ScifiRoom";
+import { ParkRoom } from "./rooms/ParkRoom";
 
 const port = Number(process.env.PORT || 4000);
 const app = express();
@@ -15,7 +16,8 @@ const gameServer = new Server({
   server,
 });
 
-gameServer.define("Room1", MyRoom).enableRealtimeListing();
+gameServer.define("park", ParkRoom).enableRealtimeListing();
+gameServer.define("scifi", ScifiRoom).enableRealtimeListing();
 
 gameServer.listen(port);
 console.log(`Listening on ws://localhost:${port}`);

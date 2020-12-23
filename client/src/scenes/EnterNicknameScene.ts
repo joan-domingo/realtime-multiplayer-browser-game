@@ -61,12 +61,16 @@ export class EnterNickNameScene extends Scene {
       document.getElementById("inputForm").style.display = "none";
       document.getElementById("loadingView").style.display = "block";
 
+      const mapInput = document.querySelector(
+        'input[name="map"]:checked'
+      ) as HTMLInputElement;
+
       new Client(endpoint)
-        .joinOrCreate("Room1", { nickname })
+        .joinOrCreate(mapInput.value, { nickname })
         .then((room: Room) => {
           roomClient.setRoomInstance(room);
           chat.readUpdates();
-          this.scene.start("MapScene", { nickname });
+          this.scene.start("MapScene", { nickname, map: mapInput.value });
         })
         .catch((e: Error) => {
           console.debug("JOIN ERROR", e);

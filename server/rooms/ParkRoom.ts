@@ -6,7 +6,7 @@ import {
   ServerRoomEvents,
 } from "../serverModels";
 
-export class MyRoom extends Room {
+export class ParkRoom extends Room {
   // this room supports only 4 clients connected
   // maxClients = 4;
   private players: ServerPlayers = {};
@@ -14,7 +14,7 @@ export class MyRoom extends Room {
   constructor(options: any) {
     super();
     this.setState({
-      messages: [`Welcome to the most awesome game ever. Starting room...`],
+      messages: [`Welcome to the Park! 🎉`],
     });
   }
 
