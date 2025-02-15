@@ -1,7 +1,5 @@
 # Real-time Multiplayer Browser Game
 
-## !! In Development !!
-
 Find the current state published in: https://master.dirptxqd87yvl.amplifyapp.com/
 
 ## Set Up
